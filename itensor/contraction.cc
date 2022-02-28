@@ -38,9 +38,6 @@ int main(){
         }
         sparse.push_back(sum/10);
 
-
-        puts("====================================");
-
         sum = 0;
         for (int k = 0; k < 10; k++){
             auto I1 = Index(2*dim[i]);
@@ -59,6 +56,8 @@ int main(){
             sum += ms_double.count();
         }
         dense.push_back(sum/10);
+        
+        puts("====================================");
     }
     puts("Sparse contration times:");
     for (auto ele:sparse) std::cout<<ele<<" ,";
