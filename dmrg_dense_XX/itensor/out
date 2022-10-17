@@ -1,0 +1,181 @@
+Got basic.quantum_number = no
+
+    vN Entropy at center bond b=16 = 0.558828853196
+    Eigs at center bond b=16: 0.7900 0.2005 0.0074 0.0019 
+    Largest link dim during sweep 1/5 was 64
+    Largest truncation error: 5.65963e-07
+    Energy after sweep 1/5 is -9.974114549826
+    Sweep 1/5 CPU time = 0.0997s (Wall time = 0.101s)
+
+    vN Entropy at center bond b=16 = 0.787294509322
+    Eigs at center bond b=16: 0.7423 0.1718 0.0683 0.0155 0.0013 
+    Largest link dim during sweep 2/5 was 64
+    Largest truncation error: 4.49232e-08
+    Energy after sweep 2/5 is -10.006575000434
+    Sweep 2/5 CPU time = 0.156s (Wall time = 0.156s)
+
+    vN Entropy at center bond b=16 = 0.842455423751
+    Eigs at center bond b=16: 0.7334 0.1283 0.1149 0.0201 0.0014 0.0011 
+    Largest link dim during sweep 3/5 was 64
+    Largest truncation error: 1.09333e-09
+    Energy after sweep 3/5 is -10.008178525447
+    Sweep 3/5 CPU time = 0.154s (Wall time = 0.154s)
+
+    vN Entropy at center bond b=16 = 0.846737915733
+    Eigs at center bond b=16: 0.7320 0.1223 0.1217 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 4/5 was 64
+    Largest truncation error: 1.73023e-10
+    Energy after sweep 4/5 is -10.008193904156
+    Sweep 4/5 CPU time = 0.151s (Wall time = 0.151s)
+
+    vN Entropy at center bond b=16 = 0.846818566061
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 5/5 was 64
+    Largest truncation error: 1.63898e-11
+    Energy after sweep 5/5 is -10.008193949916
+    Sweep 5/5 CPU time = 0.149s (Wall time = 0.149s)
+dim = 64
+H|psi> time (sec) = 0.000665345
+============= Davison: =============
+davison dim = 64
+number of davison iteration = 3
+davison time (sec) = 0.00238174
+====================================
+
+    vN Entropy at center bond b=16 = 0.846818634291
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 1/5 was 100
+    Largest truncation error: 2.76846e-14
+    Energy after sweep 1/5 is -10.008193950241
+    Sweep 1/5 CPU time = 0.394s (Wall time = 0.394s)
+
+    vN Entropy at center bond b=16 = 0.846818634604
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 2/5 was 100
+    Largest truncation error: 2.38169e-14
+    Energy after sweep 2/5 is -10.008193950242
+    Sweep 2/5 CPU time = 0.400s (Wall time = 0.401s)
+
+    vN Entropy at center bond b=16 = 0.846818634560
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 3/5 was 100
+    Largest truncation error: 2.33931e-14
+    Energy after sweep 3/5 is -10.008193950242
+    Sweep 3/5 CPU time = 0.401s (Wall time = 0.401s)
+
+    vN Entropy at center bond b=16 = 0.846818634565
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 4/5 was 100
+    Largest truncation error: 2.35269e-14
+    Energy after sweep 4/5 is -10.008193950242
+    Sweep 4/5 CPU time = 0.407s (Wall time = 0.407s)
+
+    vN Entropy at center bond b=16 = 0.846818634565
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 5/5 was 100
+    Largest truncation error: 2.33988e-14
+    Energy after sweep 5/5 is -10.008193950242
+    Sweep 5/5 CPU time = 0.402s (Wall time = 0.402s)
+dim = 100
+H|psi> time (sec) = 0.00179373
+============= Davison: =============
+davison dim = 100
+number of davison iteration = 3
+davison time (sec) = 0.0063042
+====================================
+
+    vN Entropy at center bond b=16 = 0.846818634686
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 1/5 was 200
+    Largest truncation error: 5.22136e-18
+    Energy after sweep 1/5 is -10.008193950243
+    Sweep 1/5 CPU time = 1.901s (Wall time = 1.943s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 2/5 was 200
+    Largest truncation error: 5.04176e-18
+    Energy after sweep 2/5 is -10.008193950243
+    Sweep 2/5 CPU time = 2.308s (Wall time = 2.399s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 3/5 was 200
+    Largest truncation error: 5.50399e-18
+    Energy after sweep 3/5 is -10.008193950243
+    Sweep 3/5 CPU time = 2.271s (Wall time = 2.369s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 4/5 was 200
+    Largest truncation error: 5.00563e-18
+    Energy after sweep 4/5 is -10.008193950243
+    Sweep 4/5 CPU time = 2.305s (Wall time = 2.377s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 5/5 was 200
+    Largest truncation error: 5.92321e-18
+    Energy after sweep 5/5 is -10.008193950243
+    Sweep 5/5 CPU time = 2.297s (Wall time = 2.382s)
+dim = 200
+H|psi> time (sec) = 0.0112601
+============= Davison: =============
+davison dim = 200
+number of davison iteration = 3
+davison time (sec) = 0.0385999
+====================================
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 1/5 was 300
+    Largest truncation error: 7.45194e-21
+    Energy after sweep 1/5 is -10.008193950243
+    Sweep 1/5 CPU time = 6.043s (Wall time = 6.293s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 2/5 was 300
+    Largest truncation error: 6.44453e-21
+    Energy after sweep 2/5 is -10.008193950243
+    Sweep 2/5 CPU time = 6.697s (Wall time = 6.939s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 3/5 was 300
+    Largest truncation error: 7.48042e-21
+    Energy after sweep 3/5 is -10.008193950243
+    Sweep 3/5 CPU time = 6.621s (Wall time = 6.875s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 4/5 was 300
+    Largest truncation error: 5.98839e-21
+    Energy after sweep 4/5 is -10.008193950243
+    Sweep 4/5 CPU time = 6.693s (Wall time = 6.933s)
+
+    vN Entropy at center bond b=16 = 0.846818634696
+    Eigs at center bond b=16: 0.7320 0.1220 0.1220 0.0203 0.0013 0.0013 
+    Largest link dim during sweep 5/5 was 300
+    Largest truncation error: 6.88187e-21
+    Energy after sweep 5/5 is -10.008193950243
+    Sweep 5/5 CPU time = 6.653s (Wall time = 6.905s)
+dim = 300
+H|psi> time (sec) = 0.0355652
+============= Davison: =============
+davison dim = 300
+number of davison iteration = 3
+davison time (sec) = 0.123749
+====================================
+===========================================
+contract time (sec) = 0.000103649
+===========================================
+===========================================
+contract time (sec) = 0.000155092
+===========================================
+===========================================
+contract time (sec) = 0.00104201
+===========================================
+===========================================
+contract time (sec) = 0.00344646
+===========================================

@@ -1,0 +1,21 @@
+Run
+`make`
+to compile the ITensor DMRG code
+
+This is for XX model for L=100 sites
+
+In the input file, you can specify
+1. Use quantum number or not
+2. The bond dimension you target
+
+Run the code by:
+./dmrg input > out
+
+Note that if the actual bond dimension is smaller than the target one, there would be error message starting with
+"dim not match:"
+You need to check this does not happend
+
+Run the Python file
+`python readtensor.py out`
+to extract the matrix elements
+

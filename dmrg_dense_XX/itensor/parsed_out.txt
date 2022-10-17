@@ -1,0 +1,57 @@
+(cytnx4) [j9263178@aragorn cytnx_benchmark]$ python readtensor.py out
+dim = 64
+H|psi> time (sec) = 0
+number of davison iteration = 3
+davison time (sec) = 0
+
+dim = 100
+H|psi> time (sec) = 0
+number of davison iteration = 3
+davison time (sec) = 0
+
+contract time (sec) = 5.1732e-05
+contract time (sec) = 8.5598e-05
+dim = 64
+H|psi> time (sec) = 0.000531613
+number of davison iteration = 3
+davison time (sec) = 0.0185215
+
+dim = 100
+H|psi> time (sec) = 0.00100617
+number of davison iteration = 3
+davison time (sec) = 0.0365092
+
+dim = 200
+H|psi> time (sec) = 0.0119438
+number of davison iteration = 3
+davison time (sec) = 0.136197
+
+dim = 300
+H|psi> time (sec) = 0.0192724
+number of davison iteration = 3
+davison time (sec) = 0.311075
+
+contract time (sec) = 6.9677e-05
+contract time (sec) = 0.00023344
+contract time (sec) = 0.000465827
+contract time (sec) = 0.00122229
+number of (A1,A2): 6 6 4
+[[[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]
+
+ [[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]
+
+ [[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]
+
+ ...
+
+ [[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]
+
+ [[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]
+
+ [[0. 0. 0. ... 0. 0. 0.]
+  [0. 0. 0. ... 0. 0. 0.]]]

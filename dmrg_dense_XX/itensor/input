@@ -1,0 +1,5 @@
+basic
+{
+    quantum_number = no
+    bond_dim = 64 100 200 300
+}
