@@ -306,10 +306,11 @@ static void itensor_Hpsi_dense_D64(benchmark::State& state)
 	auto Rb = Index(D, "Rb");
 
 	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
+	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
 	auto L = randomITensor(Mb1, Lb, prime(Lb));
 	auto R = randomITensor(Mb2, Rb, prime(Rb));
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
@@ -327,10 +328,11 @@ static void itensor_Hpsi_dense_D100(benchmark::State& state)
 	auto Rb = Index(D, "Rb");
 
 	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
+	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
 	auto L = randomITensor(Mb1, Lb, prime(Lb));
 	auto R = randomITensor(Mb2, Rb, prime(Rb));
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
@@ -348,10 +350,11 @@ static void itensor_Hpsi_dense_D200(benchmark::State& state)
 	auto Rb = Index(D, "Rb");
 
 	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
+	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
 	auto L = randomITensor(Mb1, Lb, prime(Lb));
 	auto R = randomITensor(Mb2, Rb, prime(Rb));
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
@@ -370,10 +373,11 @@ static void itensor_Hpsi_dense_D300(benchmark::State& state)
 	auto Rb = Index(D, "Rb");
 
 	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
+	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
 	auto L = randomITensor(Mb1, Lb, prime(Lb));
 	auto R = randomITensor(Mb2, Rb, prime(Rb));
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
@@ -392,10 +396,11 @@ static void itensor_Hpsi_dense_D400(benchmark::State& state)
 	auto Rb = Index(D, "Rb");
 
 	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
+	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
 	auto L = randomITensor(Mb1, Lb, prime(Lb));
 	auto R = randomITensor(Mb2, Rb, prime(Rb));
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
@@ -404,24 +409,39 @@ static void itensor_Hpsi_dense_D400(benchmark::State& state)
 
 static void itensor_Hpsi_U1_D64(benchmark::State& state)
 {
+
+	// auto envB1 = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
+	// auto envLB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {1,6,15,20,15,6,1}); //D=64
+	// auto envRB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {1,6,15,20,15,6,1}); //D=64
+	// auto phyB = Bond(BD_IN, {Qs(-1),Qs(1)}, {1,1}); 
+	// auto MB = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
+
+	// auto M1 = UniTensor({MB, MB.redirect(), phyB, phyB.redirect()});
+	// auto M2 =  UniTensor({MB, MB.redirect(), phyB, phyB.redirect()});
+	// auto psi =  UniTensor({envLB2, phyB.redirect(), phyB.redirect(), envRB2.redirect()});
+	// auto L = UniTensor({envB1.redirect(), envLB2.redirect(), envLB2});
+	// auto R = UniTensor({envB1, envRB2, envRB2.redirect()});
+
 	int D = 64;
 	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
-	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, Out, "Mb2");
+	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
 	auto phy1 = Index(QN(-1), 1, QN(1), 1, In,"phy1");
 	auto phy2 = Index(QN(-1), 1, QN(1), 1, In,"phy2");
-	auto Lb = Index(D, "Lb");
-	auto Rb = Index(D, "Rb");
+	auto Lb = Index(QN(-6),1,QN(-4),6,QN(-2),15,QN(0),20,QN(2),15,QN(4),6,QN(6),1,In,"Lb");
+	auto Rb = Index(QN(-6),1,QN(-4),6,QN(-2),15,QN(0),20,QN(2),15,QN(4),6,QN(6),1,In,"Rb");
 
-	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(Mb2, prime(Mb2), phy2, prime(phy2));
-	auto L = randomITensor(Mb1, Lb, prime(Lb));
-	auto R = randomITensor(Mb2, Rb, prime(Rb));
-	auto psi = randomITensor(Lb, phy1, phy2, Rb);
+	auto M1 = randomITensor(QN(0), Mb1, dag(prime(Mb1)), phy1, dag(prime(phy1)));
+	auto M2 = randomITensor(QN(0),prime(Mb1), dag(Mb2), phy2, dag(prime(phy2)));
+	auto L = randomITensor(QN(0),dag(Mb1), dag(Lb), prime(Lb));
+	auto R = randomITensor(QN(0),Mb2, Rb, dag(prime(Rb)));
+	auto psi = randomITensor(QN(0),Lb, dag(phy1), dag(phy2), dag(Rb));
 
 	for (auto _: state) {
 		auto out = L*(M1*(M2*(psi*R)));
 	}
 }
+
+BENCHMARK(itensor_Hpsi_U1_D64);
 
 BENCHMARK(itensor_Hpsi_dense_D64);
 BENCHMARK(itensor_Hpsi_dense_D100);
