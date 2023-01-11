@@ -30,7 +30,7 @@ static void Cytnx_Hpsi_dense_D64(benchmark::State& state)
 	auto psi_ = psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -50,7 +50,7 @@ static void Cytnx_Hpsi_dense_D100(benchmark::State& state)
 	auto psi_ = psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 static void Cytnx_Hpsi_dense_D200(benchmark::State& state)
@@ -69,7 +69,7 @@ static void Cytnx_Hpsi_dense_D200(benchmark::State& state)
 	auto psi_ = psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -90,7 +90,7 @@ static void Cytnx_Hpsi_dense_D300(benchmark::State& state)
 	auto psi_ = psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -110,7 +110,7 @@ static void Cytnx_Hpsi_dense_D400(benchmark::State& state)
 	auto psi_ = psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -162,7 +162,7 @@ static void Cytnx_Hpsi_U1_D64(benchmark::State& state){
 	auto psi_ = psi.relabels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -193,7 +193,7 @@ static void Cytnx_Hpsi_U1_D100(benchmark::State& state)
 	auto psi_ = psi.relabels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -222,7 +222,7 @@ static void Cytnx_Hpsi_U1_D200(benchmark::State& state){
 	auto psi_ = psi.relabels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -253,7 +253,7 @@ static void Cytnx_Hpsi_U1_D300(benchmark::State& state){
 	auto psi_ = psi.relabels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
@@ -280,7 +280,7 @@ static void Cytnx_Hpsi_U1_D400(benchmark::State& state){
 	auto psi_ = psi.relabels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, false, false), false, false), false, false), false, false);
+		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
 
