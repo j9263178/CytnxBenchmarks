@@ -7,9 +7,9 @@ using namespace cytnx;
 using namespace itensor;
 
 
-static void Cytnx_Hpsi_dense_D64(benchmark::State& state)
+static void Cytnx_Hpsi_dense(benchmark::State& state)
 {	
-	cytnx_int64 D = 64;
+	cytnx_int64 D = state.range(0);
 	cytnx::UniTensor L = cytnx::UniTensor(cytnx::zeros({4,D,D}));
 	cytnx::UniTensor R = cytnx::UniTensor(cytnx::zeros({4,D,D}));
 	cytnx::UniTensor M1 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
@@ -34,106 +34,6 @@ static void Cytnx_Hpsi_dense_D64(benchmark::State& state)
     }
 }
 
-static void Cytnx_Hpsi_dense_D100(benchmark::State& state)
-{
-	cytnx_int64 D = 100;
-	cytnx::UniTensor L = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor R = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor M1 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor M2 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor psi = cytnx::UniTensor(cytnx::zeros({D,2,2,D}));
-
-	auto L_ = L.set_labels({-5,-1,0});
-	auto R_ = R.set_labels({-7,-4,3});
-	auto M1_ = M1.set_labels({-5,-6,-2,1});
-	auto M2_ = M2.set_labels({-6,-7,-3,2});
-	auto psi_ = psi.set_labels({-1,-2,-3,-4});
-
-	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
-    }
-}
-static void Cytnx_Hpsi_dense_D200(benchmark::State& state)
-{
-	cytnx_int64 D = 200;
-	cytnx::UniTensor L = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor R = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor M1 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor M2 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor psi = cytnx::UniTensor(cytnx::zeros({D,2,2,D}));
-
-	auto L_ = L.set_labels({-5,-1,0});
-	auto R_ = R.set_labels({-7,-4,3});
-	auto M1_ = M1.set_labels({-5,-6,-2,1});
-	auto M2_ = M2.set_labels({-6,-7,-3,2});
-	auto psi_ = psi.set_labels({-1,-2,-3,-4});
-
-	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
-    }
-}
-
-
-static void Cytnx_Hpsi_dense_D300(benchmark::State& state)
-{
-	cytnx_int64 D = 300;
-	cytnx::UniTensor L = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor R = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor M1 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor M2 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor psi = cytnx::UniTensor(cytnx::zeros({D,2,2,D}));
-
-	auto L_ = L.set_labels({-5,-1,0});
-	auto R_ = R.set_labels({-7,-4,3});
-	auto M1_ = M1.set_labels({-5,-6,-2,1});
-	auto M2_ = M2.set_labels({-6,-7,-3,2});
-	auto psi_ = psi.set_labels({-1,-2,-3,-4});
-
-	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
-    }
-}
-
-static void Cytnx_Hpsi_dense_D400(benchmark::State& state)
-{
-	cytnx_int64 D = 400;
-	cytnx::UniTensor L = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor R = cytnx::UniTensor(cytnx::zeros({4,D,D}));
-	cytnx::UniTensor M1 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor M2 = cytnx::UniTensor(cytnx::zeros({4,4,2,2}));
-	cytnx::UniTensor psi = cytnx::UniTensor(cytnx::zeros({D,2,2,D}));
-
-	auto L_ = L.set_labels({-5,-1,0});
-	auto R_ = R.set_labels({-7,-4,3});
-	auto M1_ = M1.set_labels({-5,-6,-2,1});
-	auto M2_ = M2.set_labels({-6,-7,-3,2});
-	auto psi_ = psi.set_labels({-1,-2,-3,-4});
-
-	for (auto _: state) {
-		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
-    }
-}
-
-
-
-// Cytnx U1 test
-// static void Cytnx_declare_U1(benchmark::State& state)
-// {
-// 	//auto envB1 = Bond(4,BD_KET, {{0}, {-2}, {2}, {0}});
-// 	auto envB1 = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
-// 	//auto envLB2 = Bond(100,BD_KET, {{-6}, {-6}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {6}, {6}});
-// 	auto envLB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {2,9,22,31,24,10,2}); //D=100
-// 	//auto envRB2 = Bond(100,BD_KET, {{-6}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-4}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {-2}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {2}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {4}, {6}, {6}});
-// 	auto envRB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {1,8,23,31,24,11,2}); //D=100
-// 	// auto phyB = Bond(2,BD_KET,{{1}, {-1}});
-// 	auto phyB = Bond(BD_IN, {Qs(-1),Qs(1)}, {1,1}); 
-// 	// auto MB = Bond(4,BD_KET, {{0}, {-2}, {2}, {0}});
-// 	auto MB = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
-//     for (auto _: state) {
-// 		auto psi =  UniTensor({envLB2, phyB.redirect(), phyB.redirect(), envRB2.redirect()});
-//     }
-// }
-// BENCHMARK(Cytnx_declare_U1);
 
 static void Cytnx_Hpsi_U1_D64(benchmark::State& state){
 	// ( 0 , 2) ( 2 , 1) ( -2 , 1) L:  None
@@ -165,7 +65,6 @@ static void Cytnx_Hpsi_U1_D64(benchmark::State& state){
 		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
-
 
 static void Cytnx_Hpsi_U1_D100(benchmark::State& state)
 {
@@ -226,8 +125,6 @@ static void Cytnx_Hpsi_U1_D200(benchmark::State& state){
     }
 }
 
-
-
 static void Cytnx_Hpsi_U1_D300(benchmark::State& state){
 	// ( 1 , 86) ( 3 , 52) ( 5 , 16) ( 7 , 3) ( -7 , 2) ( -5 , 14) ( -3 , 45) ( -1 , 82) L:  None
 	// ( 1 , 86) ( 3 , 52) ( 5 , 16) ( 7 , 3) ( -7 , 2) ( -5 , 14) ( -3 , 45) ( -1 , 82) L:  None
@@ -257,7 +154,6 @@ static void Cytnx_Hpsi_U1_D300(benchmark::State& state){
     }
 }
 
-
 static void Cytnx_Hpsi_U1_D400(benchmark::State& state){
 	// ( 1 , 113) ( 3 , 69) ( 5 , 23) ( 7 , 4) ( -7 , 3) ( -5 , 19) ( -3 , 61) ( -1 , 108) L:  None
 	// ( 1 , 112) ( 3 , 72) ( 5 , 26) ( 7 , 4) ( -7 , 3) ( -5 , 19) ( -3 , 59) ( -1 , 105) R:  None
@@ -285,99 +181,9 @@ static void Cytnx_Hpsi_U1_D400(benchmark::State& state){
 }
 
 
-static void itensor_Hpsi_dense_D64(benchmark::State& state)
+static void itensor_Hpsi_dense(benchmark::State& state)
 {
-	int D = 64;
-	auto Mb1 = Index(4, "Mb1");
-	auto Mb2 = Index(4, "Mb2");
-	auto phy1 = Index(2,"phy1");
-	auto phy2 = Index(2,"phy2");
-	auto Lb = Index(D, "Lb");
-	auto Rb = Index(D, "Rb");
-
-	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
-	auto L = randomITensor(Mb1, Lb, prime(Lb));
-	auto R = randomITensor(Mb2, Rb, prime(Rb));
-	auto psi = randomITensor(Lb, phy1, phy2, Rb);
-
-
-	for (auto _: state) {
-		auto out = L*(M1*(M2*(psi*R)));
-	}
-}
-
-static void itensor_Hpsi_dense_D100(benchmark::State& state)
-{
-	int D = 100;
-	auto Mb1 = Index(4, "Mb1");
-	auto Mb2 = Index(4, "Mb2");
-	auto phy1 = Index(2,"phy1");
-	auto phy2 = Index(2,"phy2");
-	auto Lb = Index(D, "Lb");
-	auto Rb = Index(D, "Rb");
-
-	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
-	auto L = randomITensor(Mb1, Lb, prime(Lb));
-	auto R = randomITensor(Mb2, Rb, prime(Rb));
-	auto psi = randomITensor(Lb, phy1, phy2, Rb);
-
-
-	for (auto _: state) {
-		auto out = L*(M1*(M2*(psi*R)));
-	}
-}
-
-static void itensor_Hpsi_dense_D200(benchmark::State& state)
-{
-	int D = 200;
-	auto Mb1 = Index(4, "Mb1");
-	auto Mb2 = Index(4, "Mb2");
-	auto phy1 = Index(2,"phy1");
-	auto phy2 = Index(2,"phy2");
-	auto Lb = Index(D, "Lb");
-	auto Rb = Index(D, "Rb");
-
-	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
-	auto L = randomITensor(Mb1, Lb, prime(Lb));
-	auto R = randomITensor(Mb2, Rb, prime(Rb));
-	auto psi = randomITensor(Lb, phy1, phy2, Rb);
-
-
-	for (auto _: state) {
-		auto out = L*(M1*(M2*(psi*R)));
-	}
-}
-
-
-static void itensor_Hpsi_dense_D300(benchmark::State& state)
-{
-	int D = 300;
-	auto Mb1 = Index(4, "Mb1");
-	auto Mb2 = Index(4, "Mb2");
-	auto phy1 = Index(2,"phy1");
-	auto phy2 = Index(2,"phy2");
-	auto Lb = Index(D, "Lb");
-	auto Rb = Index(D, "Rb");
-
-	auto M1 = randomITensor(Mb1, prime(Mb1), phy1, prime(phy1));
-	auto M2 = randomITensor(prime(Mb1), Mb2, phy2, prime(phy2));
-	auto L = randomITensor(Mb1, Lb, prime(Lb));
-	auto R = randomITensor(Mb2, Rb, prime(Rb));
-	auto psi = randomITensor(Lb, phy1, phy2, Rb);
-
-
-	for (auto _: state) {
-		auto out = L*(M1*(M2*(psi*R)));
-	}
-}
-
-
-static void itensor_Hpsi_dense_D400(benchmark::State& state)
-{
-	int D = 400;
+	int D = state.range(0);
 	auto Mb1 = Index(4, "Mb1");
 	auto Mb2 = Index(4, "Mb2");
 	auto phy1 = Index(2,"phy1");
@@ -527,30 +333,29 @@ static void itensor_Hpsi_U1_D400(benchmark::State& state)
 	}
 }
 
-BENCHMARK(itensor_Hpsi_U1_D64);
-BENCHMARK(itensor_Hpsi_U1_D100);
-BENCHMARK(itensor_Hpsi_U1_D200);
-BENCHMARK(itensor_Hpsi_U1_D300);
-BENCHMARK(itensor_Hpsi_U1_D400);
 
-BENCHMARK(itensor_Hpsi_dense_D64);
-BENCHMARK(itensor_Hpsi_dense_D100);
-BENCHMARK(itensor_Hpsi_dense_D200);
-BENCHMARK(itensor_Hpsi_dense_D300);
-BENCHMARK(itensor_Hpsi_dense_D400);
 
-BENCHMARK(Cytnx_Hpsi_dense_D64);
-BENCHMARK(Cytnx_Hpsi_dense_D100);
-BENCHMARK(Cytnx_Hpsi_dense_D200);
-BENCHMARK(Cytnx_Hpsi_dense_D300);
-BENCHMARK(Cytnx_Hpsi_dense_D400);
+BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
+BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
+BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
+BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
 
-BENCHMARK(Cytnx_Hpsi_U1_D64);
-BENCHMARK(Cytnx_Hpsi_U1_D100);
-BENCHMARK(Cytnx_Hpsi_U1_D200);
-BENCHMARK(Cytnx_Hpsi_U1_D300);
-BENCHMARK(Cytnx_Hpsi_U1_D400);
+BENCHMARK(itensor_Hpsi_dense)->Arg(64);
+BENCHMARK(itensor_Hpsi_dense)->Arg(100);
+BENCHMARK(itensor_Hpsi_dense)->Arg(200);
+BENCHMARK(itensor_Hpsi_dense)->Arg(300);
 
+// BENCHMARK(Cytnx_Hpsi_U1_D64);
+// BENCHMARK(Cytnx_Hpsi_U1_D100);
+// BENCHMARK(Cytnx_Hpsi_U1_D200);
+// BENCHMARK(Cytnx_Hpsi_U1_D300);
+// BENCHMARK(Cytnx_Hpsi_U1_D400);
+
+// BENCHMARK(itensor_Hpsi_U1_D64);
+// BENCHMARK(itensor_Hpsi_U1_D100);
+// BENCHMARK(itensor_Hpsi_U1_D200);
+// BENCHMARK(itensor_Hpsi_U1_D300);
+// BENCHMARK(itensor_Hpsi_U1_D400);
  
 BENCHMARK_MAIN();
 
