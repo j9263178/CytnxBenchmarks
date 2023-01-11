@@ -6,7 +6,6 @@
 using namespace cytnx;
 using namespace itensor;
 
-
 static void Cytnx_Hpsi_dense(benchmark::State& state)
 {	
 	cytnx_int64 D = state.range(0);
@@ -33,7 +32,6 @@ static void Cytnx_Hpsi_dense(benchmark::State& state)
 		auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
     }
 }
-
 
 static void Cytnx_Hpsi_U1_D64(benchmark::State& state){
 	// ( 0 , 2) ( 2 , 1) ( -2 , 1) L:  None
@@ -334,28 +332,29 @@ static void itensor_Hpsi_U1_D400(benchmark::State& state)
 }
 
 
-
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
+BENCHMARK(Cytnx_Hpsi_dense)->Arg(400);
 
 BENCHMARK(itensor_Hpsi_dense)->Arg(64);
 BENCHMARK(itensor_Hpsi_dense)->Arg(100);
 BENCHMARK(itensor_Hpsi_dense)->Arg(200);
 BENCHMARK(itensor_Hpsi_dense)->Arg(300);
+BENCHMARK(itensor_Hpsi_dense)->Arg(400);
 
-// BENCHMARK(Cytnx_Hpsi_U1_D64);
-// BENCHMARK(Cytnx_Hpsi_U1_D100);
-// BENCHMARK(Cytnx_Hpsi_U1_D200);
-// BENCHMARK(Cytnx_Hpsi_U1_D300);
-// BENCHMARK(Cytnx_Hpsi_U1_D400);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D100);
+BENCHMARK(Cytnx_Hpsi_U1_D200);
+BENCHMARK(Cytnx_Hpsi_U1_D300);
+BENCHMARK(Cytnx_Hpsi_U1_D400);
 
-// BENCHMARK(itensor_Hpsi_U1_D64);
-// BENCHMARK(itensor_Hpsi_U1_D100);
-// BENCHMARK(itensor_Hpsi_U1_D200);
-// BENCHMARK(itensor_Hpsi_U1_D300);
-// BENCHMARK(itensor_Hpsi_U1_D400);
+BENCHMARK(itensor_Hpsi_U1_D64);
+BENCHMARK(itensor_Hpsi_U1_D100);
+BENCHMARK(itensor_Hpsi_U1_D200);
+BENCHMARK(itensor_Hpsi_U1_D300);
+BENCHMARK(itensor_Hpsi_U1_D400);
  
 BENCHMARK_MAIN();
 
