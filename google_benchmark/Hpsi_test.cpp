@@ -4,17 +4,7 @@
 #include <itensor/all.h>
 
 using namespace cytnx;
-
 using namespace itensor;
-
-// Cytnx dense test
-// static void Cytnx_declare_dense(benchmark::State& state)
-// {
-//     for (auto _: state) {
-// 	cytnx::UniTensor psi = cytnx::UniTensor(cytnx::zeros({100,2,2,100}));
-//     }
-// }
-// BENCHMARK(Cytnx_declare_dense);
 
 
 static void Cytnx_Hpsi_dense_D64(benchmark::State& state)
@@ -415,13 +405,6 @@ static void itensor_Hpsi_U1_D64(benchmark::State& state)
 	// auto envRB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {1,6,15,20,15,6,1}); //D=64
 	// auto phyB = Bond(BD_IN, {Qs(-1),Qs(1)}, {1,1}); 
 	// auto MB = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
-
-	// auto M1 = UniTensor({MB, MB.redirect(), phyB, phyB.redirect()});
-	// auto M2 =  UniTensor({MB, MB.redirect(), phyB, phyB.redirect()});
-	// auto psi =  UniTensor({envLB2, phyB.redirect(), phyB.redirect(), envRB2.redirect()});
-	// auto L = UniTensor({envB1.redirect(), envLB2.redirect(), envLB2});
-	// auto R = UniTensor({envB1, envRB2, envRB2.redirect()});
-
 	int D = 64;
 	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
 	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
@@ -441,7 +424,114 @@ static void itensor_Hpsi_U1_D64(benchmark::State& state)
 	}
 }
 
+static void itensor_Hpsi_U1_D100(benchmark::State& state)
+{
+
+	// auto envB1 = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
+	// auto envLB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {2,9,22,31,24,10,2}); //D=100
+	// auto envRB2 = Bond(BD_IN, {Qs(-6),Qs(-4),Qs(-2),Qs(0),Qs(2),Qs(4),Qs(6)}, {1,8,23,31,24,11,2}); //D=100
+	// auto phyB = Bond(BD_IN, {Qs(-1),Qs(1)}, {1,1}); 
+	// auto MB = Bond(BD_IN, {Qs(-2),Qs(0),Qs(2)}, {1, 2, 1});
+
+	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
+	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
+	auto phy1 = Index(QN(-1), 1, QN(1), 1, In,"phy1");
+	auto phy2 = Index(QN(-1), 1, QN(1), 1, In,"phy2");
+	auto Lb = Index(QN(-6),2,QN(-4),9,QN(-2),22,QN(0),31,QN(2),24,QN(4),10,QN(6),2,In,"Lb");
+	auto Rb = Index(QN(-6),2,QN(-4),9,QN(-2),22,QN(0),31,QN(2),24,QN(4),10,QN(6),2,In,"Rb");
+
+	auto M1 = randomITensor(QN(0), Mb1, dag(prime(Mb1)), phy1, dag(prime(phy1)));
+	auto M2 = randomITensor(QN(0),prime(Mb1), dag(Mb2), phy2, dag(prime(phy2)));
+	auto L = randomITensor(QN(0),dag(Mb1), dag(Lb), prime(Lb));
+	auto R = randomITensor(QN(0),Mb2, Rb, dag(prime(Rb)));
+	auto psi = randomITensor(QN(0),Lb, dag(phy1), dag(phy2), dag(Rb));
+
+	for (auto _: state) {
+		auto out = L*(M1*(M2*(psi*R)));
+	}
+}
+
+static void itensor_Hpsi_U1_D200(benchmark::State& state)
+{
+
+	// ( 0 , 61) ( 2 , 50) ( 4 , 23) ( 6 , 5) ( -6 , 3) ( -4 , 15) ( -2 , 43) L:  None
+	// ( 0 , 61) ( 2 , 50) ( 4 , 23) ( 6 , 5) ( -6 , 3) ( -4 , 15) ( -2 , 43) L:  None
+	// ( 0 , 62) ( 2 , 48) ( 4 , 21) ( 6 , 4) ( 8 , 1) ( -6 , 3) ( -4 , 17) ( -2 , 44) R:  None
+	// ( 0 , 62) ( 2 , 48) ( 4 , 21) ( 6 , 4) ( 8 , 1) ( -6 , 3) ( -4 , 17) ( -2 , 44) R:  None
+
+	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
+	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
+	auto phy1 = Index(QN(-1), 1, QN(1), 1, In,"phy1");
+	auto phy2 = Index(QN(-1), 1, QN(1), 1, In,"phy2");
+	auto Lb = Index(QN(-6),3,QN(-4),15,QN(-2),43,QN(0),61,QN(2),50,QN(4),23,QN(6),5,In,"Lb");
+	auto Rb = Index(QN(-6),3,QN(-4),17,QN(-2),44,QN(0),62,QN(2),48,QN(4),21,QN(6),4,In,"Rb");
+
+	auto M1 = randomITensor(QN(0), Mb1, dag(prime(Mb1)), phy1, dag(prime(phy1)));
+	auto M2 = randomITensor(QN(0),prime(Mb1), dag(Mb2), phy2, dag(prime(phy2)));
+	auto L = randomITensor(QN(0),dag(Mb1), dag(Lb), prime(Lb));
+	auto R = randomITensor(QN(0),Mb2, Rb, dag(prime(Rb)));
+	auto psi = randomITensor(QN(0),Lb, dag(phy1), dag(phy2), dag(Rb));
+
+	for (auto _: state) {
+		auto out = L*(M1*(M2*(psi*R)));
+	}
+}
+
+static void itensor_Hpsi_U1_D300(benchmark::State& state)
+{
+
+
+	// auto envLB2 = Bond(BD_IN, {Qs(1),Qs(3),Qs(5),Qs(7),Qs(-7),Qs(-5),Qs(-3),Qs(-1)}, {86,52,16,3,2,14,45,82}); //D=300
+	// auto envRB2 = Bond(BD_IN, {Qs(1),Qs(3),Qs(5),Qs(7),Qs(-7),Qs(-5),Qs(-3),Qs(-1)}, {87,54,18,3,2,13,43,80}); //D=300
+
+	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
+	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
+	auto phy1 = Index(QN(-1), 1, QN(1), 1, In,"phy1");
+	auto phy2 = Index(QN(-1), 1, QN(1), 1, In,"phy2");
+	auto Lb = Index(QN(1),86,QN(3),52,QN(5),16,QN(7),3,QN(-7),2,QN(-5),14,QN(-3),45,QN(-1),82,In,"Lb");
+	auto Rb = Index(QN(1),87,QN(3),54,QN(5),18,QN(7),3,QN(-7),2,QN(-5),13,QN(-3),43,QN(-1),80,In,"Rb");
+
+	auto M1 = randomITensor(QN(0), Mb1, dag(prime(Mb1)), phy1, dag(prime(phy1)));
+	auto M2 = randomITensor(QN(0),prime(Mb1), dag(Mb2), phy2, dag(prime(phy2)));
+	auto L = randomITensor(QN(0),dag(Mb1), dag(Lb), prime(Lb));
+	auto R = randomITensor(QN(0),Mb2, Rb, dag(prime(Rb)));
+	auto psi = randomITensor(QN(0),Lb, dag(phy1), dag(phy2), dag(Rb));
+
+	for (auto _: state) {
+		auto out = L*(M1*(M2*(psi*R)));
+	}
+}
+
+static void itensor_Hpsi_U1_D400(benchmark::State& state)
+{
+
+
+	// auto envLB2 = Bond(BD_IN, {Qs(1),Qs(3),Qs(5),Qs(7),Qs(-7),Qs(-5),Qs(-3),Qs(-1)}, {113,69,23,4,3,19,61,108}); //D=400
+	// auto envRB2 = Bond(BD_IN, {Qs(1),Qs(3),Qs(5),Qs(7),Qs(-7),Qs(-5),Qs(-3),Qs(-1)}, {112,72,26,4,3,19,59,105}); //D=400
+
+	auto Mb1 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb1");
+	auto Mb2 = Index(QN(-2), 1, QN(0), 2, QN(2), 1, In, "Mb2");
+	auto phy1 = Index(QN(-1), 1, QN(1), 1, In,"phy1");
+	auto phy2 = Index(QN(-1), 1, QN(1), 1, In,"phy2");
+	auto Lb = Index(QN(1),113,QN(3),69,QN(5),23,QN(7),4,QN(-7),3,QN(-5),19,QN(-3),61,QN(-1),108,In,"Lb");
+	auto Rb = Index(QN(1),112,QN(3),72,QN(5),26,QN(7),4,QN(-7),3,QN(-5),19,QN(-3),59,QN(-1),105,In,"Rb");
+
+	auto M1 = randomITensor(QN(0), Mb1, dag(prime(Mb1)), phy1, dag(prime(phy1)));
+	auto M2 = randomITensor(QN(0),prime(Mb1), dag(Mb2), phy2, dag(prime(phy2)));
+	auto L = randomITensor(QN(0),dag(Mb1), dag(Lb), prime(Lb));
+	auto R = randomITensor(QN(0),Mb2, Rb, dag(prime(Rb)));
+	auto psi = randomITensor(QN(0),Lb, dag(phy1), dag(phy2), dag(Rb));
+
+	for (auto _: state) {
+		auto out = L*(M1*(M2*(psi*R)));
+	}
+}
+
 BENCHMARK(itensor_Hpsi_U1_D64);
+BENCHMARK(itensor_Hpsi_U1_D100);
+BENCHMARK(itensor_Hpsi_U1_D200);
+BENCHMARK(itensor_Hpsi_U1_D300);
+BENCHMARK(itensor_Hpsi_U1_D400);
 
 BENCHMARK(itensor_Hpsi_dense_D64);
 BENCHMARK(itensor_Hpsi_dense_D100);
