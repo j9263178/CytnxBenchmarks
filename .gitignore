@@ -5,6 +5,9 @@
 
 # 忽略 config 目錄下的 database.yml 檔案
 *.e
+*callgrind.out*
+*/build
+*.csv
 
 # 忽略所有 db 目錄下附檔名是 .sqlite3 的檔案
 # /db/*.sqlite3
