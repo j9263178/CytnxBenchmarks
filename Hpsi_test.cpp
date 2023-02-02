@@ -10,7 +10,7 @@ using namespace itensor;
 static void STANDALONECytnx_Hpsi_dense()
 {
 	malloc_trim(0);
-	cytnx_int64 D = 600;
+	cytnx_int64 D = 64;
 	cytnx::UniTensor L = cytnx::UniTensor(zeros({4,D,D}));
 	cytnx::UniTensor R = cytnx::UniTensor(zeros({4,D,D}));
 	cytnx::UniTensor M1 = cytnx::UniTensor(zeros({4,4,2,2}));
@@ -45,7 +45,7 @@ static void STANDALONECytnx_Hpsi_dense()
 static void STANDALONEitensor_Hpsi_dense()
 {
 	malloc_trim(0);
-	int D = 600;
+	int D = 64;
 	auto Mb1 = Index(4, "Mb1");
 	auto Mb2 = Index(4, "Mb2");
 	auto phy1 = Index(2,"phy1");
@@ -441,19 +441,17 @@ static void Cytnx_Movemem(benchmark::State& state){
 	}
 }
 
-
+BENCHMARK(itensor_Hpsi_dense)->Arg(64);
+BENCHMARK(itensor_Hpsi_dense)->Arg(100);
+BENCHMARK(itensor_Hpsi_dense)->Arg(200);
+BENCHMARK(itensor_Hpsi_dense)->Arg(300);
+BENCHMARK(itensor_Hpsi_dense)->Arg(600);
 
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
 BENCHMARK(Cytnx_Hpsi_dense)->Arg(600);
-
-BENCHMARK(itensor_Hpsi_dense)->Arg(64);
-BENCHMARK(itensor_Hpsi_dense)->Arg(100);
-BENCHMARK(itensor_Hpsi_dense)->Arg(200);
-BENCHMARK(itensor_Hpsi_dense)->Arg(300);
-BENCHMARK(itensor_Hpsi_dense)->Arg(600);
 
 BENCHMARK(Cytnx_Hpsi_U1_D64);
 BENCHMARK(Cytnx_Hpsi_U1_D100);
@@ -472,7 +470,7 @@ BENCHMARK(Cytnx_Movemem)->Arg(20);
 
 BENCHMARK_MAIN();
 // int main(){
-// 	malloc_trim(0);
-// 	STANDALONEitensor_Hpsi_dense();
-// 	STANDALONECytnx_Hpsi_dense();
+	// malloc_trim(0);
+	// STANDALONEitensor_Hpsi_dense();
+	// STANDALONECytnx_Hpsi_dense();
 // }
