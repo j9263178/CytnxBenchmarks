@@ -228,7 +228,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
         for(int p = Nsites-2; p>=0; p--){
             auto dim_l = A[p].shape()[0];
             auto dim_r = A[p+1].shape()[2];
-            auto psi = cytnx::Contract(A[p],A[p+1]);
+            auto psi = cytnx::Contract(A[p],A[p+1],true,true);
             auto optres = optimize_psi(psi, LR[p],M,M,LR[p+2], maxit, krydim);
             psi = optres[1];
             auto lbl1 = A[p].labels();
@@ -239,7 +239,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p] = svdres[1];
             A[p+1] = svdres[2];
             A[p+1].set_labels(lbl2);
-            A[p] = cytnx::Contract(A[p],s); //// absorb s into next neighbor
+            A[p] = cytnx::Contract(A[p],s,true,true); //// absorb s into next neighbor
             A[p].set_labels(lbl1);
             // anet.FromString({"R: -2,-1,-3",\
             //                 "B: 1,-4,-1",\
@@ -265,7 +265,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
         for(int p = 0; p<Nsites-1; p++){    
             auto dim_l = A[p].shape()[0];
             auto dim_r = A[p+1].shape()[2];
-            auto psi = cytnx::Contract(A[p],A[p+1]); //// cytnx::Contract
+            auto psi = cytnx::Contract(A[p],A[p+1],true,true); //// cytnx::Contract
             auto optres = optimize_psi(psi, LR[p],M,M,LR[p+2], maxit, krydim);
             psi = optres[1];
             auto lbl1 = A[p].labels();
@@ -276,7 +276,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p] = svdres[1];
             A[p+1] = svdres[2];
             A[p].set_labels(lbl1);
-            A[p+1] = cytnx::Contract(s,A[p+1]); //// absorb s into next neighbor.
+            A[p+1] = cytnx::Contract(s,A[p+1],true,true); //// absorb s into next neighbor.
             A[p+1].set_labels(lbl2);
             // anet = Network();
             // anet.FromString({"L: -2,-1,-3",\
@@ -309,6 +309,7 @@ static void itensor_dmrg_U1(benchmark::State& state){
     // InputGroup input (infile,"basic");
     // auto qn      = input.getYesNo("quantum_number");
     // auto dims    = read_vector<int> (infile, "bond_dim");
+	malloc_trim(0);
 
     int chi = state.range(0);
     int N = state.range(1);
@@ -336,7 +337,7 @@ static void itensor_dmrg_U1(benchmark::State& state){
     sweeps.mindim() = chi;
     sweeps.cutoff() = 1E-12;
     sweeps.niter() = 2;
-    std::tie(energy,psi) = dmrg(H,psi,Nsweeps,"Silent");
+    std::tie(energy,psi) = dmrg(H,psi,sweeps);
     auto psit = psi;
 
     sweeps = Sweeps(1);
@@ -345,21 +346,21 @@ static void itensor_dmrg_U1(benchmark::State& state){
     sweeps.cutoff() = 1E-12;
     sweeps.niter() = 2;
 	for (auto _: state) {
-        std::tie(energy,psit) = dmrg(H,psit,sweeps,"Silent");
+        std::tie(energy,psit) = dmrg(H,psit,sweeps);
     }
 }
 
 
-BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
 BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
 BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
 BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
 BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
-BENCHMARK(cytnx_dmrg_U1)->Args({500,32,10});
-// BENCHMARK(itensor_dmrg_U1)->Args({64,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
-// BENCHMARK(itensor_dmrg_U1)->Args({400,32,7});
-// BENCHMARK(itensor_dmrg_U1)->Args({500,32,7});
+// BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
+BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
+BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});
+// BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
 BENCHMARK_MAIN();
