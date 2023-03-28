@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 #include <array>
-#include <cytnx.hpp>
 #include <itensor/all.h>
+#include <cytnx.hpp>
 #include <malloc.h>
 // #include "dmrg.h"
 
@@ -16,7 +16,7 @@ class Hxx: public LinOp{
         UniTensor M1;
         UniTensor M2;
 
-    Hxx(Network anet, UniTensor L, UniTensor R, UniTensor M1, UniTensor M2):
+    Hxx(Network anet, UniTensor L, UniTensor M1, UniTensor M2, UniTensor R):
         LinOp("mv", 0, Type.Double, Device.cpu){
         this->anet = anet;
         this->L = L;
@@ -26,9 +26,16 @@ class Hxx: public LinOp{
     }
     UniTensor matvec(const UniTensor &v) override{
         auto lbl = v.labels(); 
-        this->anet.PutUniTensor("psi",v);
-        auto out = this->anet.Launch(true);
-        out.contiguous_();
+        // this->anet.PutUniTensor("psi",v);
+        // auto out = this->anet.Launch(false);
+        auto L_ = this->L.relabels({"-5","-1","0"});
+        auto R_ = this->R.relabels({"-7","-4","3"});
+        auto M1_ = this->M1.relabels({"-5","-6","-2","1"});
+        auto M2_ = this->M2.relabels({"-6","-7","-3","2"});
+        auto psi_ = v.relabels({"-1","-2","-3","-4"});
+        auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
+
+        // out.contiguous_();
         out.set_labels(lbl);
         return out;
     }
@@ -36,13 +43,14 @@ class Hxx: public LinOp{
 
 std::vector<UniTensor> optimize_psi(UniTensor psivec,UniTensor L, UniTensor M1,UniTensor M2, UniTensor R, int maxit, int krydim){
     auto anet = Network();
-    anet.FromString({"psi: -1,-2,-3,-4",\
-                    "L: -5,-1,0",\
-                    "R: -7,-4,3",\
-                    "M1: -5,-6,-2,1",\
-                    "M2: -6,-7,-3,2",\
-                    "TOUT: 0,1;2,3"});
-    anet.PutUniTensors({"L","M1","M2","R"},{L,M1,M2,R});
+    // anet.FromString({"psi: -1,-2,-3,-4",\
+    //                 "L: -5,-1,0",\
+    //                 "R: -7,-4,3",\
+    //                 "M1: -5,-6,-2,1",\
+    //                 "M2: -6,-7,-3,2",\
+    //                 "TOUT: 0,1;2,3",\
+    //                 "ORDER: (L,(M1,(M2,(psi,R))))"});
+    // anet.PutUniTensors({"L","M1","M2","R"},{L,M1,M2,R});
     auto H = Hxx(anet,L,M1,M2,R);
     auto res = linalg::Lanczos(&H, psivec, "Gnd", 999, maxit, 1, true, false, 0, false);
     return res;
@@ -116,15 +124,21 @@ static void cytnx_dmrg_U1(benchmark::State& state){
     LR[0]  = L0;
     LR[Nsites] = R0;
 
-    auto anet = Network();
-    anet.FromString({"L: -2,-1,-3",\
-                    "A: -1,-4,1",\
-                    "M: -2,0,-4,-5",\
-                    "A_Conj: -3,-5,2",\
-                    "TOUT: 0;1,2"});
+    // auto anet = Network();
+    // anet.FromString({"L: -2,-1,-3",\
+    //                 "A: -1,-4,1",\
+    //                 "M: -2,0,-4,-5",\
+    //                 "A_Conj: -3,-5,2",\
+    //                 "TOUT: 0;1,2"});
     for(int p = 0; p<Nsites-1;p++){
-        anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
-        LR[p+1] = anet.Launch(true);
+        auto LR_ = LR[p].relabels({"-2","-1","-3"});
+        auto A_ = A[p].relabels({"-1","-4","1"});
+        auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
+        auto M_= M.relabels({"-2","0","-4","-5"});
+        LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});
+
+        // anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
+        // LR[p+1] = anet.Launch(true);
     }            
 
     for(int k = 0; k<numsweeps;k++){
@@ -144,13 +158,21 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p+1].set_labels(lbl2);
             A[p] = cytnx::Contract(A[p],s); //// absorb s into next neighbor
             A[p].set_labels(lbl1);
-            anet.FromString({"R: -2,-1,-3",\
-                            "B: 1,-4,-1",\
-                            "M: 0,-2,-4,-5",\
-                            "B_Conj: 2,-5,-3",\
-                            "TOUT: 0;1,2"});
-            anet.PutUniTensors({"R","B","M","B_Conj"},{LR[p+2],A[p+1],M,A[p+1].Dagger()});
-            LR[p+1] = anet.Launch(true);
+
+            // anet.FromString({"R: -2,-1,-3",\
+            //                 "B: 1,-4,-1",\
+            //                 "M: 0,-2,-4,-5",\
+            //                 "B_Conj: 2,-5,-3",\
+            //                 "TOUT: 0;1,2"});
+            // anet.PutUniTensors({"R","B","M","B_Conj"},{LR[p+2],A[p+1],M,A[p+1].Dagger()});
+            // LR[p+1] = anet.Launch(true);
+
+            auto LR_ = LR[p+2].relabels({"-2","-1","-3"});
+            auto B_ = A[p+1].relabels({"1","-4","-1"});
+            auto Bd_ = A[p+1].Dagger().relabels({"2","-5","-3"});
+            auto M_= M.relabels({"0","-2","-4","-5"});
+            LR[p+1] = Bd_.contract(M_.contract(B_.contract(LR_,true),true),true).permute({1,2,0});;
+
             // std::cout<<"Sweep r->l "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }
         
@@ -176,14 +198,19 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p].set_labels(lbl1);
             A[p+1] = cytnx::Contract(s,A[p+1]); //// absorb s into next neighbor.
             A[p+1].set_labels(lbl2);
-            anet = Network();
-            anet.FromString({"L: -2,-1,-3",\
-                            "A: -1,-4,1",\
-                            "M: -2,0,-4,-5",\
-                            "A_Conj: -3,-5,2",\
-                            "TOUT: 0;1,2"});
-            anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
-            LR[p+1] = anet.Launch(true);
+            // anet = Network();
+            // anet.FromString({"L: -2,-1,-3",\
+            //                 "A: -1,-4,1",\
+            //                 "M: -2,0,-4,-5",\
+            //                 "A_Conj: -3,-5,2",\
+            //                 "TOUT: 0;1,2"});
+            // anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
+            // LR[p+1] = anet.Launch(true);
+            auto LR_ = LR[p].relabels({"-2","-1","-3"});
+            auto A_ = A[p].relabels({"-1","-4","1"});
+            auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
+            auto M_= M.relabels({"-2","0","-4","-5"});
+            LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
             // std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }
 
@@ -214,13 +241,18 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p+1].set_labels(lbl2);
             A[p] = cytnx::Contract(A[p],s); //// absorb s into next neighbor
             A[p].set_labels(lbl1);
-            anet.FromString({"R: -2,-1,-3",\
-                            "B: 1,-4,-1",\
-                            "M: 0,-2,-4,-5",\
-                            "B_Conj: 2,-5,-3",\
-                            "TOUT: 0;1,2"});
-            anet.PutUniTensors({"R","B","M","B_Conj"},{LR[p+2],A[p+1],M,A[p+1].Dagger()});
-            LR[p+1] = anet.Launch(true);
+            // anet.FromString({"R: -2,-1,-3",\
+            //                 "B: 1,-4,-1",\
+            //                 "M: 0,-2,-4,-5",\
+            //                 "B_Conj: 2,-5,-3",\
+            //                 "TOUT: 0;1,2"});
+            // anet.PutUniTensors({"R","B","M","B_Conj"},{LR[p+2],A[p+1],M,A[p+1].Dagger()});
+            // LR[p+1] = anet.Launch(true);
+            auto LR_ = LR[p+2].relabels({"-2","-1","-3"});
+            auto B_ = A[p+1].relabels({"1","-4","-1"});
+            auto Bd_ = A[p+1].Dagger().relabels({"2","-5","-3"});
+            auto M_= M.relabels({"0","-2","-4","-5"});
+            LR[p+1] = Bd_.contract(M_.contract(B_.contract(LR_,true),true),true).permute({1,2,0});;
             // std::cout<<"Sweep r->l "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }  
         
@@ -246,14 +278,19 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             A[p].set_labels(lbl1);
             A[p+1] = cytnx::Contract(s,A[p+1]); //// absorb s into next neighbor.
             A[p+1].set_labels(lbl2);
-            anet = Network();
-            anet.FromString({"L: -2,-1,-3",\
-                            "A: -1,-4,1",\
-                            "M: -2,0,-4,-5",\
-                            "A_Conj: -3,-5,2",\
-                            "TOUT: 0;1,2"});
-            anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
-            LR[p+1] = anet.Launch(true);
+            // anet = Network();
+            // anet.FromString({"L: -2,-1,-3",\
+            //                 "A: -1,-4,1",\
+            //                 "M: -2,0,-4,-5",\
+            //                 "A_Conj: -3,-5,2",\
+            //                 "TOUT: 0;1,2"});
+            // anet.PutUniTensors({"L","A","A_Conj","M"},{LR[p],A[p],A[p].Dagger(),M});
+            // LR[p+1] = anet.Launch(true);
+            auto LR_ = LR[p].relabels({"-2","-1","-3"});
+            auto A_ = A[p].relabels({"-1","-4","1"});
+            auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
+            auto M_= M.relabels({"-2","0","-4","-5"});
+            LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
             // std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }
 
@@ -294,25 +331,35 @@ static void itensor_dmrg_U1(benchmark::State& state){
     auto psi = MPS(state_);
     Real energy;
 
-    auto sweeps = Sweeps(3);
+    auto sweeps = Sweeps(Nsweeps);
     sweeps.maxdim() = chi;
     sweeps.mindim() = chi;
     sweeps.cutoff() = 1E-12;
-    sweeps.niter() = Nsweeps;
-    std::tie(energy,psi) = dmrg(H,psi,Nsweeps,"Quiet");
+    sweeps.niter() = 2;
+    std::tie(energy,psi) = dmrg(H,psi,Nsweeps,"Silent");
     auto psit = psi;
-    sweeps.niter() = 1;
+
+    sweeps = Sweeps(1);
+    sweeps.maxdim() = chi;
+    sweeps.mindim() = chi;
+    sweeps.cutoff() = 1E-12;
+    sweeps.niter() = 2;
 	for (auto _: state) {
-        std::tie(energy,psit) = dmrg(H,psit,sweeps,"Quiet");
+        std::tie(energy,psit) = dmrg(H,psit,sweeps,"Silent");
     }
 }
 
 
-// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
-// BENCHMARK(cytnx_dmrg_U1)->Args({128,32,5});
-// BENCHMARK(cytnx_dmrg_U1)->Args({256,32,5});
-BENCHMARK(itensor_dmrg_U1)->Args({64,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({128,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({256,32,5});
-
+BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
+BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
+BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
+BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
+BENCHMARK(cytnx_dmrg_U1)->Args({500,32,10});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
+// BENCHMARK(itensor_dmrg_U1)->Args({400,32,7});
+// BENCHMARK(itensor_dmrg_U1)->Args({500,32,7});
 BENCHMARK_MAIN();
