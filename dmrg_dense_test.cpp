@@ -82,9 +82,9 @@ static void cytnx_dmrg_dense(benchmark::State& state){
     int chil, chir;
 
     Network L_AMAH, R_AMAH, projector;
-    projector.Fromfile("projector.net");
-    L_AMAH.Fromfile("L_AMAH.net");
-    R_AMAH.Fromfile("R_AMAH.net");
+    // projector.Fromfile("projector.net");
+    // L_AMAH.Fromfile("L_AMAH.net");
+    // R_AMAH.Fromfile("R_AMAH.net");
 
     std::vector<UniTensor> LR(Nsites + 1);
     LR[0] = ML;
@@ -122,7 +122,7 @@ static void cytnx_dmrg_dense(benchmark::State& state){
             auto psi = cytnx::Contract(A[p], A[p + 1]);
             chil = A[p].shape()[0];
             chir = A[p + 1].shape()[2];
-            projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
+            // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
             auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
             psi.set_rowrank(0);
             auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
@@ -155,7 +155,7 @@ static void cytnx_dmrg_dense(benchmark::State& state){
             chil = A[p].shape()[0];
             chir = A[p + 1].shape()[2];
             auto psi = cytnx::Contract(A[p], A[p + 1]);
-            projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
+            // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
             auto H = Hxx(projector,LR[p], M, M, LR[p + 2]);
             psi.set_rowrank(0);
             auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
@@ -189,7 +189,7 @@ static void cytnx_dmrg_dense(benchmark::State& state){
             auto psi = cytnx::Contract(A[p], A[p + 1]);
             chil = A[p].shape()[0];
             chir = A[p + 1].shape()[2];
-            projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
+            // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
             auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
             psi.set_rowrank(0);
             auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
@@ -221,7 +221,7 @@ static void cytnx_dmrg_dense(benchmark::State& state){
             chil = A[p].shape()[0];
             chir = A[p + 1].shape()[2];
             auto psi = cytnx::Contract(A[p], A[p + 1]);
-            projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
+            // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
             auto H = Hxx(projector,LR[p], M, M, LR[p + 2]);
             psi.set_rowrank(0);
             auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
