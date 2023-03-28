@@ -337,7 +337,7 @@ static void itensor_dmrg_U1(benchmark::State& state){
     sweeps.mindim() = chi;
     sweeps.cutoff() = 1E-12;
     sweeps.niter() = 2;
-    std::tie(energy,psi) = dmrg(H,psi,sweeps);
+    std::tie(energy,psi) = dmrg(H,psi,sweeps,"Silent");
     auto psit = psi;
 
     sweeps = Sweeps(1);
@@ -346,7 +346,7 @@ static void itensor_dmrg_U1(benchmark::State& state){
     sweeps.cutoff() = 1E-12;
     sweeps.niter() = 2;
 	for (auto _: state) {
-        std::tie(energy,psit) = dmrg(H,psit,sweeps);
+        std::tie(energy,psit) = dmrg(H,psit,sweeps,"Silent");
     }
 }
 
