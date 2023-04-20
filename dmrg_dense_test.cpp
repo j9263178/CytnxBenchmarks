@@ -117,7 +117,7 @@ static void cytnx_dmrg_dense(benchmark::State& state){
     A[Nsites - 1].set_labels(Albl);
 
     std::vector<cytnx::Scalar> Ekeep(0);
-    for (int k = 1; k < Nsweeps + 2; k++) {
+    for (int k = 1; k < Nsweeps + 1; k++) {
         for (int p = Nsites - 2; p > -1; p--) {
             auto psi = cytnx::Contract(A[p], A[p + 1]);
             chil = A[p].shape()[0];
@@ -298,8 +298,10 @@ static void itensor_dmrg_dense(benchmark::State& state){
     }
 }
 
+// BENCHMARK(itensor_dmrg_dense)->Args({200,32,10});
+BENCHMARK(cytnx_dmrg_dense)->Args({100,32,5});
 
-BENCHMARK(cytnx_dmrg_dense)->Args({200,32,10});
+// BENCHMARK(cytnx_dmrg_dense)->Args({200,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({100,32,5});
 // BENCHMARK(cytnx_dmrg_dense)->Args({200,32,5});
 // BENCHMARK(cytnx_dmrg_dense)->Args({300,32,7});
@@ -308,9 +310,9 @@ BENCHMARK(cytnx_dmrg_dense)->Args({200,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({1000,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({2000,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({3000,32,10});
-BENCHMARK(itensor_dmrg_dense)->Args({200,32,10});
+// BENCHMARK(itensor_dmrg_dense)->Args({200,32,10});
 // BENCHMARK(itensor_dmrg_dense)->Args({100,32,5});
-// BENCHMARK(itensor_dmrg_dense)->Args({200,32,5});
+// BENCHMARK(itensor_dmrg_dense)->Args({200,32,5}); 
 // BENCHMARK(itensor_dmrg_dense)->Args({300,32,7});
 
 BENCHMARK_MAIN();

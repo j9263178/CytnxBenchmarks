@@ -1,11 +1,14 @@
 #include <benchmark/benchmark.h>
 #include <array>
-#include <cytnx.hpp>
 #include <itensor/all.h>
+#include <cytnx.hpp>
 #include <malloc.h>
 
 using namespace cytnx;
 using namespace itensor;
+
+cytnx_int64 D = 64; 
+cytnx::UniTensor L = cytnx::UniTensor(zeros({4,D,D}));
 
 static void STANDALONECytnx_Hpsi_dense()
 {
@@ -42,7 +45,7 @@ static void STANDALONECytnx_Hpsi_dense()
     // }
 }
 
-static void STANDALONEitensor_Hpsi_dense()
+static void STANDALONEitensor_Hpsi_dense() 
 {
 	malloc_trim(0);
 	int D = 64;
@@ -60,7 +63,7 @@ static void STANDALONEitensor_Hpsi_dense()
 	auto psi = randomITensor(Lb, phy1, phy2, Rb);
 
 
-	// for (auto _: state) {
+	// for (auto _: state) { 
 		auto out = L*(M1*(M2*(psi*R)));
 	// }
 }
@@ -96,8 +99,8 @@ static void Cytnx_Hpsi_dense(benchmark::State& state)
 	psi.set_labels({-1,-2,-3,-4});
 
 	for (auto _: state) {
-		// auto out = L_.contract(M1_.contract(M2_.contract(psi_.contract(R_, true, true), true, true), true, true), true, true);
-		auto out = L.contract(M1.contract(M2.contract(psi.contract(R, true, true), true, true), true, true), true, true);
+		// auto out = L.contract(M1.contract(M2.contract(psi.contract(R, true, true), true, true), true, true), true, true);
+		benchmark::DoNotOptimize(L.contract(M1.contract(M2.contract(psi.contract(R, true, true), true, true), true, true), true, true));
     }
 }
 
@@ -278,7 +281,8 @@ static void itensor_Hpsi_dense(benchmark::State& state)
 
 
 	for (auto _: state) {
-		auto out = L*(M1*(M2*(psi*R)));
+		benchmark::DoNotOptimize(L*(M1*(M2*(psi*R))));
+		// auto out = L*(M1*(M2*(psi*R)));
 	}
 }
 
@@ -418,59 +422,130 @@ static void itensor_Hpsi_U1_D400(benchmark::State& state)
 }
 
 static void itensor_permute(benchmark::State& state){
-	malloc_trim(0);
-	int D = state.range(0);
-	auto i = Index(D,"i");
-	auto j = Index(D,"j");
-	auto k = Index(D,"k");
-	auto l = Index(D,"l");
-	auto m = Index(D,"m");
-	auto n = Index(D,"n");
-	auto T = randomITensor(i,j,k,l,m,n);
+	// malloc_trim(0);
+	// int D = state.range(0);
+	// auto i = Index(D,"i");
+	// auto j = Index(D,"j");
+	// auto k = Index(D,"k");
+	// auto l = Index(D,"l");
+	// auto m = Index(D,"m");
+	// auto n = Index(D,"n");
+	// auto T = randomITensor(i,j,k,l,m,n);
 	for(auto _ : state){
+		malloc_trim(0);
+		int D = state.range(0);
+		auto i = Index(D,"i");
+		auto j = Index(D,"j");
+		auto k = Index(D,"k");
+		auto l = Index(D,"l");
+		auto m = Index(D,"m");
+		auto n = Index(D,"n");
+		auto T = randomITensor(i,j,k,l,m,n);
+		// auto T = ITensor(i,j,k,l,m,n);
 		T = permute(T,{k,j,m,l,n,i});
 	}
 }
 
 static void Cytnx_Movemem(benchmark::State& state){
-	malloc_trim(0);
+	// malloc_trim(0);
 	cytnx_int64 D = state.range(0);
 	cytnx::UniTensor T = cytnx::UniTensor(zeros({D,D,D,D,D,D}));
 	for(auto _ : state){
-		T = T.permute({2,1,4,3,5,0}).contiguous();
+		malloc_trim(0);
+		// cytnx_int64 D = state.range(0);
+		// cytnx::UniTensor T = cytnx::UniTensor(zeros({D,D,D,D,D,D}));
+		// cytnx::UniTensor T = cytnx::UniTensor(cytnx::random::rand({D,D,D,D,D,D}));
+		T.permute({2,1,4,3,5,0}).contiguous();
 	}
 }
-
-BENCHMARK(itensor_Hpsi_dense)->Arg(64);
-BENCHMARK(itensor_Hpsi_dense)->Arg(100);
-BENCHMARK(itensor_Hpsi_dense)->Arg(200);
-BENCHMARK(itensor_Hpsi_dense)->Arg(300);
-BENCHMARK(itensor_Hpsi_dense)->Arg(600);
-
-BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
-BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
-BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
-BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
-BENCHMARK(Cytnx_Hpsi_dense)->Arg(600);
-
 BENCHMARK(Cytnx_Hpsi_U1_D64);
-BENCHMARK(Cytnx_Hpsi_U1_D100);
-BENCHMARK(Cytnx_Hpsi_U1_D200);
-BENCHMARK(Cytnx_Hpsi_U1_D300);
-BENCHMARK(Cytnx_Hpsi_U1_D400);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
+BENCHMARK(Cytnx_Hpsi_U1_D64);
 
-BENCHMARK(itensor_Hpsi_U1_D64);
-BENCHMARK(itensor_Hpsi_U1_D100);
-BENCHMARK(itensor_Hpsi_U1_D200);
-BENCHMARK(itensor_Hpsi_U1_D300);
-BENCHMARK(itensor_Hpsi_U1_D400);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(600);
 
-BENCHMARK(itensor_permute)->Arg(20);
-BENCHMARK(Cytnx_Movemem)->Arg(20);
+// BENCHMARK(itensor_Hpsi_dense)->Arg(64);
+// BENCHMARK(itensor_Hpsi_dense)->Arg(100);
+// BENCHMARK(itensor_Hpsi_dense)->Arg(200);
+// BENCHMARK(itensor_Hpsi_dense)->Arg(300);
+// BENCHMARK(itensor_Hpsi_dense)->Arg(600);
+
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(64);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(100);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(200);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(300);
+// BENCHMARK(Cytnx_Hpsi_dense)->Arg(600);
+
+// BENCHMARK(Cytnx_Hpsi_U1_D64);
+// BENCHMARK(Cytnx_Hpsi_U1_D100);
+// BENCHMARK(Cytnx_Hpsi_U1_D200);
+// BENCHMARK(Cytnx_Hpsi_U1_D300);
+// BENCHMARK(Cytnx_Hpsi_U1_D400);
+
+// BENCHMARK(itensor_Hpsi_U1_D64);
+// BENCHMARK(itensor_Hpsi_U1_D100);
+// BENCHMARK(itensor_Hpsi_U1_D200);
+// BENCHMARK(itensor_Hpsi_U1_D300);
+// BENCHMARK(itensor_Hpsi_U1_D400);
+
+// BENCHMARK(Cytnx_Hpsi_U1_D64);
+// BENCHMARK(Cytnx_Hpsi_U1_D100);
+// BENCHMARK(Cytnx_Hpsi_U1_D200);
+// BENCHMARK(Cytnx_Hpsi_U1_D300);
+// BENCHMARK(Cytnx_Hpsi_U1_D400);
+
+// BENCHMARK(itensor_permute)->Arg(2);
+// BENCHMARK(Cytnx_Movemem)->Arg(2);
+// BENCHMARK(itensor_permute)->Arg(4);
+// BENCHMARK(Cytnx_Movemem)->Arg(4);
+// BENCHMARK(itensor_permute)->Arg(6);
+// BENCHMARK(Cytnx_Movemem)->Arg(6);
+// BENCHMARK(itensor_permute)->Arg(8);
+// BENCHMARK(Cytnx_Movemem)->Arg(8);
+// BENCHMARK(itensor_permute)->Arg(16);
+// BENCHMARK(Cytnx_Movemem)->Arg(16);
+// BENCHMARK(itensor_permute)->Arg(20);
+// BENCHMARK(Cytnx_Movemem)->Arg(20);
+
+// BENCHMARK(itensor_permute)->Arg(2);
+// BENCHMARK(Cytnx_Movemem)->Arg(2);
+// BENCHMARK(itensor_permute)->Arg(3);
+// BENCHMARK(Cytnx_Movemem)->Arg(3);
+// BENCHMARK(itensor_permute)->Arg(4);
+// BENCHMARK(Cytnx_Movemem)->Arg(4);
+// BENCHMARK(itensor_permute)->Arg(5);
+// BENCHMARK(Cytnx_Movemem)->Arg(5);
+// BENCHMARK(itensor_permute)->Arg(6);
+// BENCHMARK(Cytnx_Movemem)->Arg(6);
+// BENCHMARK(itensor_permute)->Arg(8);
+// BENCHMARK(Cytnx_Movemem)->Arg(8);
+// BENCHMARK(itensor_permute)->Arg(10);
+// BENCHMARK(Cytnx_Movemem)->Arg(10);
+// BENCHMARK(itensor_permute)->Arg(16);
+// BENCHMARK(Cytnx_Movemem)->Arg(16);
+// BENCHMARK(itensor_permute)->Arg(20);
+// BENCHMARK(Cytnx_Movemem)->Arg(20);
 
 BENCHMARK_MAIN();
 // int main(){
-	// malloc_trim(0);
-	// STANDALONEitensor_Hpsi_dense();
-	// STANDALONECytnx_Hpsi_dense();
+// 	malloc_trim(0);
+// 	for(int i=0;i<1;i++){
+// 		STANDALONEitensor_Hpsi_dense();
+// 	}
+// 	for(int i=0;i<1;i++){
+// 		STANDALONECytnx_Hpsi_dense();
+// 	}
+// 	// for(int i=0;i<1;i++){
+// 	// 	STANDALONEitensor_Hpsi_dense();
+// 	// }
 // }

@@ -1,27 +1,28 @@
 #include <benchmark/benchmark.h>
 #include <array>
 #include <itensor/all.h>
-#include <cytnx.hpp>
-#include <malloc.h>
-// #include "dmrg.h"
+#include <cytnx.hpp> 
+#include <malloc.h>  
+#include <chrono>
+// #include "dmrg.h" 
 
-using namespace cytnx;
-using namespace itensor;
+using namespace cytnx;  
+using namespace itensor; 
 
 class Hxx: public LinOp{
     public:
-        Network anet;
+        Network anet; 
         UniTensor L;
-        UniTensor R;
+        UniTensor R; 
         UniTensor M1;
         UniTensor M2;
 
-    Hxx(Network anet, UniTensor L, UniTensor M1, UniTensor M2, UniTensor R):
+    Hxx(Network &anet, UniTensor &L, UniTensor &M1, UniTensor &M2, UniTensor &R):
         LinOp("mv", 0, Type.Double, Device.cpu){
         this->anet = anet;
         this->L = L;
         this->R = R;
-        this->M1 = M1;
+        this->M1 = M1;  
         this->M2 = M2;
     }
     UniTensor matvec(const UniTensor &v) override{
@@ -41,7 +42,7 @@ class Hxx: public LinOp{
     }
 };
 
-std::vector<UniTensor> optimize_psi(UniTensor psivec,UniTensor L, UniTensor M1,UniTensor M2, UniTensor R, int maxit, int krydim){
+std::vector<UniTensor> optimize_psi(UniTensor &psivec,UniTensor &L, UniTensor &M1,UniTensor &M2, UniTensor &R, int maxit, int krydim){
     auto anet = Network();
     // anet.FromString({"psi: -1,-2,-3,-4",\
     //                 "L: -5,-1,0",\
@@ -52,7 +53,14 @@ std::vector<UniTensor> optimize_psi(UniTensor psivec,UniTensor L, UniTensor M1,U
     //                 "ORDER: (L,(M1,(M2,(psi,R))))"});
     // anet.PutUniTensors({"L","M1","M2","R"},{L,M1,M2,R});
     auto H = Hxx(anet,L,M1,M2,R);
+    // auto t1 = std::chrono::high_resolution_clock::now();
+    // auto res = linalg::Lanczos(&H, psivec, "Gnd", 999, maxit, 1, true, false, 0, false);
     auto res = linalg::Lanczos(&H, psivec, "Gnd", 999, maxit, 1, true, false, 0, false);
+    // auto t2 = std::chrono::high_resolution_clock::now();
+    //     std::cout << "Lanczos took "
+    //             << std::chrono::duration_cast<std::chrono::nanoseconds>(t2-t1).count()
+    //             << " ns\n";
+    // auto res = linalg::Arnoldi(&H, psivec, "SM", maxit, 999, 1, true, false);
     return res;
 };
 
@@ -209,7 +217,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             auto LR_ = LR[p].relabels({"-2","-1","-3"});
             auto A_ = A[p].relabels({"-1","-4","1"});
             auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
-            auto M_= M.relabels({"-2","0","-4","-5"});
+            auto M_= M.relabels({"-2","0","-4","-5"}); 
             LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
             // std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }
@@ -291,8 +299,8 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
             auto M_= M.relabels({"-2","0","-4","-5"});
             LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
-            // std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
-        }
+            // std::cout<<"Sweep l->r "<<p<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+        } 
 
         lbl = A[Nsites-1].labels();
         A[Nsites-1].set_rowrank(2);
@@ -335,32 +343,67 @@ static void itensor_dmrg_U1(benchmark::State& state){
     auto sweeps = Sweeps(Nsweeps);
     sweeps.maxdim() = chi;
     sweeps.mindim() = chi;
-    sweeps.cutoff() = 1E-12;
+    sweeps.cutoff() = 1E-15;
     sweeps.niter() = 2;
-    std::tie(energy,psi) = dmrg(H,psi,sweeps,"Silent");
-    auto psit = psi;
+    std::tie(energy,psi) = dmrg(H,psi,sweeps,{"Silent",true,"UseSVD",true});
+    auto psit = psi;  
 
     sweeps = Sweeps(1);
     sweeps.maxdim() = chi;
     sweeps.mindim() = chi;
-    sweeps.cutoff() = 1E-12;
+    sweeps.cutoff() = 1E-15;
     sweeps.niter() = 2;
 	for (auto _: state) {
-        std::tie(energy,psit) = dmrg(H,psit,sweeps,"Silent");
+        std::tie(energy,psit) = dmrg(H,psit,sweeps,{"Silent",true,"UseSVD",true});
     }
 }
-
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
 
 // BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
-BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
-BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
-BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
-BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
+// BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
+// BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
 // BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
-// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
-BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
-BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({700,32,18});
+// BENCHMARK(cytnx_dmrg_U1)->Args({1000,32,18});
+// BENCHMARK(cytnx_dmrg_U1)->Args({2000,32,18});
+// BENCHMARK(cytnx_dmrg_U1)->Args({3000,32,18});
+
+BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});   
+BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});   
+BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});  
 BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
-BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});
-// BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
-BENCHMARK_MAIN();
+BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});  
+BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({700,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({1000,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({2000,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({3000,32,18});
+
+// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
+// BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
+// BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
+
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
+
+// BENCHMARK(cytnx_dmrg_U1)->Args({16,16,2}); 
+// BENCHMARK(itensor_dmrg_U1)->Args({16,16,2});
+BENCHMARK_MAIN(); 
