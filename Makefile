@@ -43,6 +43,7 @@ TARGETS:=Hpsi_test.e
 # TARGETS:=useitensor.e
 # TARGETS:=dmrg_U1_test.e
 # TARGETS:=dmrg_dense_test.e
+
 $(TARGETS): %.e:%.cpp
 #	$(CC) $(CYTNX_CXXFLAGS) -I$(BENCHMARK_HEADER) -I${CYTNX_INC}  $< -L$(BENCHMARK_SRC) ${CYTNX_LIB} ${CYTNX_LINK} -I$(ITENSOR_ROOT) -L$(HDF5_PREFIX)/lib -lhdf5 -lhdf5_hl -g -DNDEBUG -Wall -Wno-unknown-pragmas -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_rt -lmkl_core -liomp5 -L$(ITENSOR_LIBDIR) -litensor -lrt -lbenchmark -o $@
 #	$(CC) $(CYTNX_CXXFLAGS) -I$(BENCHMARK_HEADER) $< -L$(BENCHMARK_SRC) ${CYTNX_LINK} -I$(ITENSOR_ROOT) -L$(HDF5_PREFIX)/lib -lhdf5 -lhdf5_hl -g -DNDEBUG -Wall -Wno-unknown-pragmas -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_rt -lmkl_core -liomp5 -L$(ITENSOR_LIBDIR) -litensor -lrt -lbenchmark -o $@

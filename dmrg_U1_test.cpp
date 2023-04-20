@@ -219,7 +219,7 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
             auto M_= M.relabels({"-2","0","-4","-5"}); 
             LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
-            // std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+            //std::cout<<"Sweep l->r "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
         }
 
         lbl = A[Nsites-1].labels();
@@ -298,9 +298,9 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             auto A_ = A[p].relabels({"-1","-4","1"});
             auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
             auto M_= M.relabels({"-2","0","-4","-5"});
-            LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});;
-            // std::cout<<"Sweep l->r "<<p<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
-        } 
+            LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});
+            std::cout<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+        }
 
         lbl = A[Nsites-1].labels();
         A[Nsites-1].set_rowrank(2);
@@ -323,7 +323,7 @@ static void itensor_dmrg_U1(benchmark::State& state){
     int N = state.range(1);
     int Nsweeps = state.range(2);
     auto qn = true;
-    auto sites = SpinHalf(N, {"ConserveQNs",qn}); //make a chain of N spin 1/2's
+    auto sites = SpinHalf(N, {"ConserveQNs=",false,"ConserveSz=",true}); //make a chain of N spin 1/2's
     auto ampo = AutoMPO(sites);
     for(auto j : range1(N-1))
     {
@@ -376,34 +376,10 @@ static void itensor_dmrg_U1(benchmark::State& state){
 // BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
 // BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
 // BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
-// BENCHMARK(cytnx_dmrg_U1)->Args({700,32,18});
-// BENCHMARK(cytnx_dmrg_U1)->Args({1000,32,18});
-// BENCHMARK(cytnx_dmrg_U1)->Args({2000,32,18});
-// BENCHMARK(cytnx_dmrg_U1)->Args({3000,32,18});
-
-BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});   
-BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});   
-BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});  
-BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
-BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});  
-BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
-// BENCHMARK(itensor_dmrg_U1)->Args({700,32,18});
-// BENCHMARK(itensor_dmrg_U1)->Args({1000,32,18});
-// BENCHMARK(itensor_dmrg_U1)->Args({2000,32,18});
-// BENCHMARK(itensor_dmrg_U1)->Args({3000,32,18});
-
-// BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
-// BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
-// BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
-// BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
-// BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
-// BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
-
 // BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
-// BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
-// BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
-
-// BENCHMARK(cytnx_dmrg_U1)->Args({16,16,2}); 
-// BENCHMARK(itensor_dmrg_U1)->Args({16,16,2});
-BENCHMARK_MAIN(); 
+BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
+BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
+BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});
+// BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
+BENCHMARK_MAIN();
