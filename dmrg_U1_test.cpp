@@ -233,6 +233,8 @@ static void cytnx_dmrg_U1(benchmark::State& state){
     // std::cout<<A[Nsites/2].shape()<<std::endl;
 
 	for (auto _: state) {
+        std::vector<std::string> oldlbls;
+
         for(int p = Nsites-2; p>=0; p--){
             auto dim_l = A[p].shape()[0];
             auto dim_r = A[p+1].shape()[2];
@@ -258,10 +260,16 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             // LR[p+1] = anet.Launch(true);
             auto LR_ = LR[p+2].relabels({"-2","-1","-3"});
             auto B_ = A[p+1].relabels({"1","-4","-1"});
-            auto Bd_ = A[p+1].Dagger().relabels({"2","-5","-3"});
+            A[p+1].Dagger_();
+            oldlbls = A[p+1].labels();
+            // auto Bd_ = A[p+1];
+            A[p+1].set_labels({"2","-5","-3"});
+            // auto Bd_ = A[p+1].Dagger().relabels({"2","-5","-3"});
             auto M_= M.relabels({"0","-2","-4","-5"});
-            LR[p+1] = Bd_.contract(M_.contract(B_.contract(LR_,true),true),true).permute({1,2,0});;
+            LR[p+1] = A[p+1].contract(M_.contract(B_.contract(LR_,true),true),true).permute({1,2,0});;
             // std::cout<<"Sweep r->l "<<k<<"/"<<numsweeps<<" loc:"<<p<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+            A[p+1].Dagger_();
+            A[p+1].set_labels(oldlbls);
         }  
         
         auto lbl = A[0].labels();
@@ -296,10 +304,16 @@ static void cytnx_dmrg_U1(benchmark::State& state){
             // LR[p+1] = anet.Launch(true);
             auto LR_ = LR[p].relabels({"-2","-1","-3"});
             auto A_ = A[p].relabels({"-1","-4","1"});
-            auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
+            A[p].Dagger_();
+            // auto Ad_ = A[p];
+            oldlbls = A[p].labels();
+            // auto Ad_ = A[p].Dagger().relabels({"-3","-5","2"});
+            A[p].set_labels({"-3","-5","2"});
             auto M_= M.relabels({"-2","0","-4","-5"});
-            LR[p+1] = Ad_.contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});
-            std::cout<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+            LR[p+1] = A[p].contract(M_.contract(A_.contract(LR_,true),true),true).permute({1,2,0});
+            // std::cout<<" Energy:"<<double(optres[0].item().real())<<std::endl;
+            A[p].Dagger_();
+            A[p].set_labels(oldlbls);
         }
 
         lbl = A[Nsites-1].labels();
@@ -370,16 +384,34 @@ static void itensor_dmrg_U1(benchmark::State& state){
 // BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
 // BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
 
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+// BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
+
 // BENCHMARK(cytnx_dmrg_U1)->Args({64,32,5});
 // BENCHMARK(cytnx_dmrg_U1)->Args({100,32,5});
 // BENCHMARK(cytnx_dmrg_U1)->Args({200,32,5});
 // BENCHMARK(cytnx_dmrg_U1)->Args({300,32,7});
 // BENCHMARK(cytnx_dmrg_U1)->Args({400,32,10});
 // BENCHMARK(cytnx_dmrg_U1)->Args({500,32,18});
+// BENCHMARK(cytnx_dmrg_U1)->Args({700,32,18});
+BENCHMARK(cytnx_dmrg_U1)->Args({2000,32,10});
+
 // BENCHMARK(itensor_dmrg_U1)->Args({64,32,2});
-BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
-BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
-BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
-BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});
+// BENCHMARK(itensor_dmrg_U1)->Args({100,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({200,32,5});
+// BENCHMARK(itensor_dmrg_U1)->Args({300,32,7});
+// BENCHMARK(itensor_dmrg_U1)->Args({400,32,10});
 // BENCHMARK(itensor_dmrg_U1)->Args({500,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({700,32,18});
+// BENCHMARK(itensor_dmrg_U1)->Args({2000,32,10});
 BENCHMARK_MAIN();
