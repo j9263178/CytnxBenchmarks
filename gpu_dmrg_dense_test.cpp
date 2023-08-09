@@ -98,7 +98,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     // SVD on A[p]
     auto Albl = A[p].labels();
     auto Albl_ = A[p + 1].labels();
-    svdtemp = linalg::GeSvd(A[p], true, true);
+    svdtemp = linalg::Gesvd(A[p], true, true);
     s = svdtemp[0];
     u = svdtemp[1];
     vT = svdtemp[2];
@@ -116,7 +116,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     LR[p + 1] = Ad_.contract(M_.contract(A_.contract(LR_, true), true), true).permute({1, 2, 0});
   }
   auto Albl = A[Nsites - 1].labels();
-  A[Nsites - 1] = linalg::GeSvd(A[Nsites - 1], true, false)[1];
+  A[Nsites - 1] = linalg::Gesvd(A[Nsites - 1], true, false)[1];
   A[Nsites - 1].set_labels(Albl);
 
   std::vector<cytnx::Scalar> Ekeep(0);
@@ -156,7 +156,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     }  // end of sweep for
     A[0].set_rowrank(1);
     Albl = A[0].labels();
-    A[0] = linalg::GeSvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
+    A[0] = linalg::Gesvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
     A[0].set_labels(Albl);
     for (int p = 0; p < Nsites - 1; p++) {
       chil = A[p].shape()[0];
@@ -191,7 +191,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     }  // end of iteration for
     Albl = A[Nsites - 1].labels();
     A[Nsites - 1].set_rowrank(2);
-    A[Nsites - 1] = linalg::GeSvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
+    A[Nsites - 1] = linalg::Gesvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }  // end of iteration for
   for (auto _ : state) {
@@ -228,7 +228,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     }  // end of sweep for
     A[0].set_rowrank(1);
     Albl = A[0].labels();
-    A[0] = linalg::GeSvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
+    A[0] = linalg::Gesvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
     A[0].set_labels(Albl);
     for (int p = 0; p < Nsites - 1; p++) {
       chil = A[p].shape()[0];
@@ -263,7 +263,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     }  // end of iteration for
     Albl = A[Nsites - 1].labels();
     A[Nsites - 1].set_rowrank(2);
-    A[Nsites - 1] = linalg::GeSvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
+    A[Nsites - 1] = linalg::Gesvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }
 }
