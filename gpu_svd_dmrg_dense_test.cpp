@@ -7,13 +7,14 @@
 
 using namespace cytnx;
 // using namespace itensor;
+const int device = 0;
 
 class Hxx : public LinOp {
  public:
   Network projector;
   UniTensor L, M1, M2, R;
   Hxx(Network projector, UniTensor& L, UniTensor& M1, UniTensor& M2, UniTensor& R)
-      : LinOp("mv", 0, Type.Double, Device.cpu) {
+      : LinOp("mv", 0, Type.Double) {
     this->projector = projector;
     this->L = L;
     this->M1 = M1;
@@ -47,13 +48,13 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
   int krydim = 4;  // dimension of Krylov subspace (Will not be used in Lanczos "Gnd" method)
   int chid = 2;  // 1/2-spin
 
-  auto Sp = zeros({2, 2});
+  auto Sp = zeros({2, 2}, Type.Double, device);
   Sp.at<cytnx_double>(0, 1) = 1;
-  auto Sm = zeros({2, 2});
+  auto Sm = zeros({2, 2}, Type.Double, device);
   Sm.at<cytnx_double>(1, 0) = 1;
 
-  auto Si = eye(2);
-  auto M_ = zeros({4, 4, chid, chid}, Type.Double);
+  auto Si = eye(2, Type.Double, device);
+  auto M_ = zeros({4, 4, chid, chid}, Type.Double, device);
   M_(0, 0, ":", ":") = Si;
   M_(0, 1, ":", ":") = sqrt(2) * Sm;
   M_(0, 2, ":", ":") = sqrt(2) * Sp;
@@ -61,19 +62,19 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
   M_(2, 3, ":", ":") = sqrt(2) * Sm;
   M_(3, 3, ":", ":") = Si;
   auto M = UniTensor(M_, false, 0);
-  auto ML = UniTensor(zeros({4, 1, 1}, Type.Double), false, 0);  // left MPO boundary
-  auto MR = UniTensor(zeros({4, 1, 1}, Type.Double), false, 0);  // right MPO boundary
+  auto ML = UniTensor(zeros({4, 1, 1}, Type.Double, device), false, 0);  // left MPO boundary
+  auto MR = UniTensor(zeros({4, 1, 1}, Type.Double, device), false, 0);  // right MPO boundary
   ML.get_block_()(0, 0, 0) = 1;
   MR.get_block_()(3, 0, 0) = 1;
   std::vector<UniTensor> A(Nsites);
-  Tensor tempAk = zeros({1, chid, min(chi, chid)});
+  Tensor tempAk = zeros({1, chid, min(chi, chid)}, Type.Double, device);
   int spin = (0 % 2);  // 0 for spin up and 1 for spin down
   tempAk(0, spin, 0) = 1;
   A[0] = UniTensor(tempAk, false, 2);
   for (int k = 1; k < Nsites; k++) {
     int pre = A[k - 1].shape()[2];
     int nxt = min(min(chi, A[k - 1].shape()[2] * chid), pow(chid, (Nsites - k - 1)));
-    Tensor tempAk = zeros({pre, chid, nxt});
+    Tensor tempAk = zeros({pre, chid, nxt}, Type.Double, device);
     int spin = (k % 2);  // 0 for spin up and 1 for spin down
     tempAk(0, spin, 0) = 1;
     A[k] = UniTensor(tempAk, false, 2);
@@ -97,7 +98,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     // SVD on A[p]
     auto Albl = A[p].labels();
     auto Albl_ = A[p + 1].labels();
-    svdtemp = linalg::Svd(A[p]);
+    svdtemp = linalg::Svd(A[p], true);
     s = svdtemp[0];
     u = svdtemp[1];
     vT = svdtemp[2];
@@ -121,7 +122,13 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
   std::vector<cytnx::Scalar> Ekeep(0);
   for (int k = 1; k < Nsweeps + 1; k++) {
     for (int p = Nsites - 2; p > -1; p--) {
+      // std::cout << "A[p]" << std::endl;
+      // vec_print(std::cout, A[p].labels());
+      // std::cout << "A[p+1]" << std::endl;
+      // vec_print(std::cout, A[p + 1].labels());
       auto psi = cytnx::Contract(A[p], A[p + 1]);
+      // std::cout << "psi" << std::endl;
+      // vec_print(std::cout, psi.labels());
       chil = A[p].shape()[0];
       chir = A[p + 1].shape()[2];
       // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
@@ -133,7 +140,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];
       s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
@@ -141,12 +148,24 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
 
       auto Albl = A[p].labels();
       auto Albl_ = A[p + 1].labels();
+      // std::cout << "Albl" << std::endl;
+      // vec_print(std::cout, Albl);
+      // std::cout << "Albl_" << std::endl;
+      // vec_print(std::cout, Albl_);
+      // std::cout << "u" << std::endl;
+      // vec_print(std::cout, u.labels());
+      // std::cout << "s" << std::endl;
+      // vec_print(std::cout, s.labels());
+      // std::cout << "vT" << std::endl;
+      // vec_print(std::cout, vT.labels());
       A[p] = cytnx::Contract(u, s);
+      // std::cout << "A[p]" << std::endl;
+      // vec_print(std::cout, A[p].labels());
       A[p].set_labels(Albl);
       A[p + 1] = vT;
       A[p + 1].set_labels(Albl_);
-      // R_AMAH.PutUniTensors({"R", "B", "M", "B_Conj"}, {LR[p + 2], A[p + 1], M, A[p + 1].Conj()});
-      // LR[p + 1] = R_AMAH.Launch(true);
+      // R_AMAH.PutUniTensors({"R", "B", "M", "B_Conj"}, {LR[p + 2], A[p + 1], M, A[p +
+      // 1].Conj()}); LR[p + 1] = R_AMAH.Launch(true);
       auto LR_ = LR[p + 2].relabels({"-2", "-1", "-3"});
       auto B_ = A[p + 1].relabels({"1", "-4", "-1"});
       auto Bd_ = A[p + 1].Conj().relabels({"2", "-5", "-3"});
@@ -155,7 +174,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     }  // end of sweep for
     A[0].set_rowrank_(1);
     Albl = A[0].labels();
-    A[0] = linalg::Svd(A[0])[2];  // shape[1,2,2], rowrank = 1
+    A[0] = linalg::Svd(A[0], true)[2];  // shape[1,2,2], rowrank = 1
     A[0].set_labels(Albl);
     for (int p = 0; p < Nsites - 1; p++) {
       chil = A[p].shape()[0];
@@ -170,7 +189,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -207,7 +226,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -217,8 +236,8 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       A[p].set_labels(Albl);
       A[p + 1] = vT;
       A[p + 1].set_labels(Albl_);
-      // R_AMAH.PutUniTensors({"R", "B", "M", "B_Conj"}, {LR[p + 2], A[p + 1], M, A[p + 1].Conj()});
-      // LR[p + 1] = R_AMAH.Launch(true);
+      // R_AMAH.PutUniTensors({"R", "B", "M", "B_Conj"}, {LR[p + 2], A[p + 1], M, A[p +
+      // 1].Conj()}); LR[p + 1] = R_AMAH.Launch(true);
       auto LR_ = LR[p + 2].relabels({"-2", "-1", "-3"});
       auto B_ = A[p + 1].relabels({"1", "-4", "-1"});
       auto Bd_ = A[p + 1].Conj().relabels({"2", "-5", "-3"});
@@ -242,7 +261,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -320,16 +339,16 @@ BENCHMARK(cytnx_dmrg_dense)->Args({100, 32, 5});
 BENCHMARK(cytnx_dmrg_dense)->Args({200, 32, 5});
 BENCHMARK(cytnx_dmrg_dense)->Args({300, 32, 7});
 BENCHMARK(cytnx_dmrg_dense)->Args({400, 32, 10});
-// BENCHMARK(cytnx_dmrg_dense)->Args({500,32,10});
+BENCHMARK(cytnx_dmrg_dense)->Args({500, 32, 10});
 
 // BENCHMARK(cytnx_dmrg_dense)->Args({1000,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({2000,32,10});
 // BENCHMARK(cytnx_dmrg_dense)->Args({3000,32,10});
 
-// BENCHMARK(itensor_dmrg_dense)->Args({100,32,5});
-// BENCHMARK(itensor_dmrg_dense)->Args({200,32,5});
-// BENCHMARK(itensor_dmrg_dense)->Args({300,32,7});
-// BENCHMARK(itensor_dmrg_dense)->Args({400,32,10});
-// BENCHMARK(itensor_dmrg_dense)->Args({500,32,10});
+// BENCHMARK(itensor_dmrg_dense)->Args({100, 32, 5});
+// BENCHMARK(itensor_dmrg_dense)->Args({200, 32, 5});
+// BENCHMARK(itensor_dmrg_dense)->Args({300, 32, 7});
+// BENCHMARK(itensor_dmrg_dense)->Args({400, 32, 10});
+// BENCHMARK(itensor_dmrg_dense)->Args({500, 32, 10});
 
 BENCHMARK_MAIN();

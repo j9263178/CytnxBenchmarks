@@ -122,19 +122,25 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
   std::vector<cytnx::Scalar> Ekeep(0);
   for (int k = 1; k < Nsweeps + 1; k++) {
     for (int p = Nsites - 2; p > -1; p--) {
+      // std::cout << "A[p]" << std::endl;
+      // vec_print(std::cout, A[p].labels());
+      // std::cout << "A[p+1]" << std::endl;
+      // vec_print(std::cout, A[p + 1].labels());
       auto psi = cytnx::Contract(A[p], A[p + 1]);
+      // std::cout << "psi" << std::endl;
+      // vec_print(std::cout, psi.labels());
       chil = A[p].shape()[0];
       chir = A[p + 1].shape()[2];
       // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
       auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
-      psi.set_rowrank(0);
+      psi.set_rowrank_(0);
       auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
       Ekeep.push_back(cytnx::Scalar(res[0].item()));
       psi = res[1];
-      psi.set_rowrank(2);
+      psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];
       s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
@@ -142,7 +148,19 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
 
       auto Albl = A[p].labels();
       auto Albl_ = A[p + 1].labels();
+      // std::cout << "Albl" << std::endl;
+      // vec_print(std::cout, Albl);
+      // std::cout << "Albl_" << std::endl;
+      // vec_print(std::cout, Albl_);
+      // std::cout << "u" << std::endl;
+      // vec_print(std::cout, u.labels());
+      // std::cout << "s" << std::endl;
+      // vec_print(std::cout, s.labels());
+      // std::cout << "vT" << std::endl;
+      // vec_print(std::cout, vT.labels());
       A[p] = cytnx::Contract(u, s);
+      // std::cout << "A[p]" << std::endl;
+      // vec_print(std::cout, A[p].labels());
       A[p].set_labels(Albl);
       A[p + 1] = vT;
       A[p + 1].set_labels(Albl_);
@@ -154,7 +172,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       auto M_ = M.relabels({"0", "-2", "-4", "-5"});
       LR[p + 1] = Bd_.contract(M_.contract(B_.contract(LR_, true), true), true).permute({1, 2, 0});
     }  // end of sweep for
-    A[0].set_rowrank(1);
+    A[0].set_rowrank_(1);
     Albl = A[0].labels();
     A[0] = linalg::Gesvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
     A[0].set_labels(Albl);
@@ -164,14 +182,14 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       auto psi = cytnx::Contract(A[p], A[p + 1]);
       // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
       auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
-      psi.set_rowrank(0);
+      psi.set_rowrank_(0);
       auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
       Ekeep.push_back(cytnx::Scalar(res[0].item()));
       psi = res[1];
-      psi.set_rowrank(2);
+      psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -190,7 +208,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       LR[p + 1] = Ad_.contract(M_.contract(A_.contract(LR_, true), true), true).permute({1, 2, 0});
     }  // end of iteration for
     Albl = A[Nsites - 1].labels();
-    A[Nsites - 1].set_rowrank(2);
+    A[Nsites - 1].set_rowrank_(2);
     A[Nsites - 1] = linalg::Gesvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }  // end of iteration for
@@ -201,14 +219,14 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       chir = A[p + 1].shape()[2];
       // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
       auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
-      psi.set_rowrank(0);
+      psi.set_rowrank_(0);
       auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
       Ekeep.push_back(cytnx::Scalar(res[0].item()));
       psi = res[1];
-      psi.set_rowrank(2);
+      psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -226,7 +244,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       auto M_ = M.relabels({"0", "-2", "-4", "-5"});
       LR[p + 1] = Bd_.contract(M_.contract(B_.contract(LR_, true), true), true).permute({1, 2, 0});
     }  // end of sweep for
-    A[0].set_rowrank(1);
+    A[0].set_rowrank_(1);
     Albl = A[0].labels();
     A[0] = linalg::Gesvd(A[0], false, true)[1];  // shape[1,2,2], rowrank = 1
     A[0].set_labels(Albl);
@@ -236,14 +254,14 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       auto psi = cytnx::Contract(A[p], A[p + 1], true, true);
       // projector.PutUniTensors({"L", "M1", "M2", "R"}, {LR[p], M, M, LR[p+2]});
       auto H = Hxx(projector, LR[p], M, M, LR[p + 2]);
-      psi.set_rowrank(0);
+      psi.set_rowrank_(0);
       auto res = linalg::Lanczos(&H, psi, "Gnd", 999, maxit, 1, true, false, 0, false);
       Ekeep.push_back(cytnx::Scalar(res[0].item()));
       psi = res[1];
-      psi.set_rowrank(2);
+      psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Svd_truncate(psi, newdim);
+      svdtemp = linalg::Gesvd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -262,7 +280,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       LR[p + 1] = Ad_.contract(M_.contract(A_.contract(LR_, true), true), true).permute({1, 2, 0});
     }  // end of iteration for
     Albl = A[Nsites - 1].labels();
-    A[Nsites - 1].set_rowrank(2);
+    A[Nsites - 1].set_rowrank_(2);
     A[Nsites - 1] = linalg::Gesvd(A[Nsites - 1], true, false)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }
