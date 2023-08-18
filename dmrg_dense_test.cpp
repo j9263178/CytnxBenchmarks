@@ -265,6 +265,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     A[Nsites - 1] = linalg::Svd(A[Nsites - 1], true)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }
+  cytnx::vec_print(std::cout, Ekeep);
 }
 
 static void itensor_dmrg_dense(benchmark::State& state) {

@@ -9,10 +9,19 @@ BENCHMARK_ROOT:=/home/petjelinux/benchmark
 CC:=g++
 
 #cytnx flags
-CYTNX_INC := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_include__)\")" | sed -n 2p)
-CYTNX_LINK := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_linkflags__)\")" | sed -n 2p)
-CYTNX_LIB := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_lib__)\")" | sed -n 2p)/libcytnx.a
-CYTNX_CXXFLAGS := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_flags__)\")" | sed -n 2p)
+
+# Old version, when "MKL interface code: 1 >> using [ilp64] interface" is a thing
+# CYTNX_INC := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_include__)\")" | sed -n 2p)
+# CYTNX_LINK := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_linkflags__)\")" | sed -n 2p)
+# CYTNX_LIB := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_lib__)\")" | sed -n 2p)/libcytnx.a
+# CYTNX_CXXFLAGS := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_flags__)\")" | sed -n 2p)
+
+# New version
+CYTNX_INC := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_include__)\")")
+CYTNX_LINK := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_linkflags__)\")")
+CYTNX_LIB := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_lib__)\")")/libcytnx.a
+CYTNX_CXXFLAGS := $(shell python -c "exec(\"import sys\nsys.path.append(\'$(CYTNX_ROOT)\')\nimport cytnx\nprint(cytnx.__cpp_flags__)\")")
+
 # $(info $$CYTNX_INC is [${CYTNX_INC}])
 # $(info $$CYTNX_LINK is [${CYTNX_LINK}])
 # $(info $$CYTNX_LIB is [${CYTNX_LIB}])
@@ -48,8 +57,8 @@ HDF5_PREFIX=/home/petjelinux/anaconda3/envs/cytnx
 # TARGETS:=Hpsi_test.e
 # TARGETS:=useitensor.e
 # TARGETS:=dmrg_U1_test.e
-# TARGETS:=dmrg_dense_test.e
-TARGETS:=gpu_svd_dmrg_dense_test.e
+TARGETS:=dmrg_dense_test.e
+# TARGETS:=gpu_svd_dmrg_dense_test.e
 # TARGETS:=gpu_gesvd_dmrg_dense_test.e
 
 $(TARGETS): %.e:%.cpp

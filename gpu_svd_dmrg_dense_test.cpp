@@ -140,7 +140,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Gesvd_truncate(psi, newdim);
+      svdtemp = linalg::Svd_truncate(psi, newdim);
       s = svdtemp[0];
       s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
@@ -189,7 +189,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Gesvd_truncate(psi, newdim);
+      svdtemp = linalg::Svd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -226,7 +226,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Gesvd_truncate(psi, newdim);
+      svdtemp = linalg::Svd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -261,7 +261,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
       psi.set_rowrank_(2);
       // int newdim = min(min(chil * chid, chir * chid), chi);
       int newdim = chi;
-      svdtemp = linalg::Gesvd_truncate(psi, newdim);
+      svdtemp = linalg::Svd_truncate(psi, newdim);
       s = svdtemp[0];  // s.Div_(s.get_block_().Norm().item());
       u = svdtemp[1];
       vT = svdtemp[2];
@@ -284,6 +284,7 @@ static void cytnx_dmrg_dense(benchmark::State& state) {
     A[Nsites - 1] = linalg::Svd(A[Nsites - 1], true)[1];  // shape[1,2,2], rowrank = 2
     A[Nsites - 1].set_labels(Albl);
   }
+  // cytnx::vec_print(std::cout, Ekeep);
 }
 
 static void itensor_dmrg_dense(benchmark::State& state) {
